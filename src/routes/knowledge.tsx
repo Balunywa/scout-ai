@@ -15,9 +15,9 @@ import {
 import { allKnowledgeDocs, search } from "@/lib/api/client";
 
 export const Route = createFileRoute("/knowledge")({
-  validateSearch: (s: Record<string, unknown>): { q?: string; doc?: string } => ({
-    q: typeof s["q"] === "string" ? s["q"] : undefined,
-    doc: typeof s["doc"] === "string" ? s["doc"] : undefined,
+  validateSearch: (s: Record<string, unknown>): { q: string; doc: string } => ({
+    q: typeof s["q"] === "string" ? s["q"] : "",
+    doc: typeof s["doc"] === "string" ? s["doc"] : "",
   }),
   head: () => ({
     meta: [
@@ -39,8 +39,8 @@ export const Route = createFileRoute("/knowledge")({
 
 function KnowledgePage() {
   const { q: initial } = Route.useSearch();
-  const [query, setQuery] = useState(initial ?? "");
-  const [submitted, setSubmitted] = useState(initial ?? "");
+  const [query, setQuery] = useState(initial);
+  const [submitted, setSubmitted] = useState(initial);
 
   const { data, isFetching } = useQuery({
     queryKey: ["search", submitted],

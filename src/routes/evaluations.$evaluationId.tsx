@@ -129,7 +129,7 @@ function EvaluationDetail() {
             <div className="panel p-4">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-[15px] font-semibold text-foreground">{e.recommendation.decision}</p>
-                <AiBadge tone={e.recommendation.confidence === "High" ? "ai" : "warn"}>
+                <AiBadge tone={e.recommendation.confidence === "High" ? "default" : "warn"}>
                   {e.recommendation.confidence} confidence
                 </AiBadge>
               </div>
