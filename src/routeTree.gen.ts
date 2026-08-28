@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AskRouteImport } from './routes/ask'
 import { Route as CompaniesIndexRouteImport } from './routes/companies.index'
 import { Route as CompaniesCompanyIdRouteImport } from './routes/companies.$companyId'
+import { Route as EvaluationsIndexRouteImport } from './routes/evaluations.index'
 import { Route as NeedsIndexRouteImport } from './routes/needs.index'
 import { Route as NeedsNeedIdRouteImport } from './routes/needs.$needId'
 
@@ -36,6 +37,11 @@ const CompaniesCompanyIdRoute = CompaniesCompanyIdRouteImport.update({
   path: '/companies/$companyId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EvaluationsIndexRoute = EvaluationsIndexRouteImport.update({
+  id: '/evaluations/',
+  path: '/evaluations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NeedsIndexRoute = NeedsIndexRouteImport.update({
   id: '/needs/',
   path: '/needs/',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
   '/companies/': typeof CompaniesIndexRoute
+  '/evaluations/': typeof EvaluationsIndexRoute
   '/needs/': typeof NeedsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
   '/companies': typeof CompaniesIndexRoute
+  '/evaluations': typeof EvaluationsIndexRoute
   '/needs': typeof NeedsIndexRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
   '/companies/': typeof CompaniesIndexRoute
+  '/evaluations/': typeof EvaluationsIndexRoute
   '/needs/': typeof NeedsIndexRoute
 }
 export interface FileRouteTypes {
@@ -80,6 +89,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId'
     | '/needs/$needId'
     | '/companies/'
+    | '/evaluations/'
     | '/needs/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -88,6 +98,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId'
     | '/needs/$needId'
     | '/companies'
+    | '/evaluations'
     | '/needs'
   id:
     | '__root__'
@@ -96,6 +107,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId'
     | '/needs/$needId'
     | '/companies/'
+    | '/evaluations/'
     | '/needs/'
   fileRoutesById: FileRoutesById
 }
@@ -105,6 +117,7 @@ export interface RootRouteChildren {
   CompaniesCompanyIdRoute: typeof CompaniesCompanyIdRoute
   NeedsNeedIdRoute: typeof NeedsNeedIdRoute
   CompaniesIndexRoute: typeof CompaniesIndexRoute
+  EvaluationsIndexRoute: typeof EvaluationsIndexRoute
   NeedsIndexRoute: typeof NeedsIndexRoute
 }
 
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompaniesCompanyIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/evaluations/': {
+      id: '/evaluations/'
+      path: '/evaluations'
+      fullPath: '/evaluations/'
+      preLoaderRoute: typeof EvaluationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/needs/': {
       id: '/needs/'
       path: '/needs'
@@ -161,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   CompaniesCompanyIdRoute: CompaniesCompanyIdRoute,
   NeedsNeedIdRoute: NeedsNeedIdRoute,
   CompaniesIndexRoute: CompaniesIndexRoute,
+  EvaluationsIndexRoute: EvaluationsIndexRoute,
   NeedsIndexRoute: NeedsIndexRoute,
 }
 export const routeTree = rootRouteImport
