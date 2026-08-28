@@ -14,6 +14,7 @@ import { Route as AskRouteImport } from './routes/ask'
 import { Route as FollowingRouteImport } from './routes/following'
 import { Route as KnowledgeRouteImport } from './routes/knowledge'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as ScoutRouteImport } from './routes/scout'
 import { Route as CompaniesIndexRouteImport } from './routes/companies.index'
 import { Route as CompaniesCompanyIdRouteImport } from './routes/companies.$companyId'
 import { Route as EvaluationsIndexRouteImport } from './routes/evaluations.index'
@@ -44,6 +45,11 @@ const KnowledgeRoute = KnowledgeRouteImport.update({
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScoutRoute = ScoutRouteImport.update({
+  id: '/scout',
+  path: '/scout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompaniesIndexRoute = CompaniesIndexRouteImport.update({
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/following': typeof FollowingRoute
   '/knowledge': typeof KnowledgeRoute
   '/projects': typeof ProjectsRoute
+  '/scout': typeof ScoutRoute
   '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/evaluations/$evaluationId': typeof EvaluationsEvaluationIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/following': typeof FollowingRoute
   '/knowledge': typeof KnowledgeRoute
   '/projects': typeof ProjectsRoute
+  '/scout': typeof ScoutRoute
   '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/evaluations/$evaluationId': typeof EvaluationsEvaluationIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/following': typeof FollowingRoute
   '/knowledge': typeof KnowledgeRoute
   '/projects': typeof ProjectsRoute
+  '/scout': typeof ScoutRoute
   '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/evaluations/$evaluationId': typeof EvaluationsEvaluationIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/following'
     | '/knowledge'
     | '/projects'
+    | '/scout'
     | '/companies/$companyId'
     | '/evaluations/$evaluationId'
     | '/needs/$needId'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/following'
     | '/knowledge'
     | '/projects'
+    | '/scout'
     | '/companies/$companyId'
     | '/evaluations/$evaluationId'
     | '/needs/$needId'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/following'
     | '/knowledge'
     | '/projects'
+    | '/scout'
     | '/companies/$companyId'
     | '/evaluations/$evaluationId'
     | '/needs/$needId'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   FollowingRoute: typeof FollowingRoute
   KnowledgeRoute: typeof KnowledgeRoute
   ProjectsRoute: typeof ProjectsRoute
+  ScoutRoute: typeof ScoutRoute
   CompaniesCompanyIdRoute: typeof CompaniesCompanyIdRoute
   EvaluationsEvaluationIdRoute: typeof EvaluationsEvaluationIdRoute
   NeedsNeedIdRoute: typeof NeedsNeedIdRoute
@@ -208,6 +221,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scout': {
+      id: '/scout'
+      path: '/scout'
+      fullPath: '/scout'
+      preLoaderRoute: typeof ScoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/companies/': {
@@ -261,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   FollowingRoute: FollowingRoute,
   KnowledgeRoute: KnowledgeRoute,
   ProjectsRoute: ProjectsRoute,
+  ScoutRoute: ScoutRoute,
   CompaniesCompanyIdRoute: CompaniesCompanyIdRoute,
   EvaluationsEvaluationIdRoute: EvaluationsEvaluationIdRoute,
   NeedsNeedIdRoute: NeedsNeedIdRoute,
