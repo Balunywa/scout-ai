@@ -334,11 +334,18 @@ Agent             Agent       Matching     Agent
                        v
                   Azure AI Search
                        |
-       +---------------+----------------+
-       |               |                |
-       v               v                v
-Azure Database    Blob / ADLS      Microsoft 365 /
-for PostgreSQL    Documents        SharePoint / Graph
+   +-------------+------+------+---------------+
+   |             |             |               |
+   v             v             v               v
+Azure         Azure         Blob / ADLS   Microsoft 365 /
+Database for  Cosmos DB     Documents     SharePoint / Graph
+PostgreSQL    (agent +
+(domain       conversation
+ model)        state)
+   |
+   v
+Microsoft Fabric / OneLake
+(portfolio analytics — Phase 3)
 ```
 
 ---
@@ -352,13 +359,17 @@ The accelerator is designed around Azure services that can be replaced or extend
 | Identity and authentication | Microsoft Entra ID |
 | AI models and agent orchestration | Azure AI Foundry |
 | Semantic / vector search and RAG | Azure AI Search |
-| Structured application data | Azure Database for PostgreSQL |
+| Structured application (domain) data | Azure Database for PostgreSQL |
+| Agent state and conversation history | Azure Cosmos DB for NoSQL |
+| Portfolio analytics and business-value reporting | Microsoft Fabric / OneLake |
 | Documents and reports | Azure Blob Storage / Azure Data Lake Storage |
 | APIs / application backend | Azure Container Apps and/or Azure Functions |
 | Asynchronous workflows | Azure Service Bus / Event Grid |
 | Secrets and keys | Azure Key Vault |
 | Monitoring and telemetry | Azure Monitor / Application Insights |
 | Collaboration and enterprise content | Microsoft Graph / SharePoint / Teams |
+
+The data tier is intentionally split by workload: **Azure Database for PostgreSQL** holds the relational domain model (needs, companies, evaluations, projects) with `pgvector` for embeddings; **Azure Cosmos DB for NoSQL** persists agent state and conversation history, which is also the store that Azure AI Foundry Agent Service provisions natively in standard mode; and **Microsoft Fabric / OneLake** provides the Phase 3 analytics and business-value reporting layer, outside the transactional request path. Customers can consolidate or substitute these stores based on their existing data estate.
 
 The design should avoid hardcoded credentials, subscription IDs, or environment-specific endpoints. Configuration should be externalized and deployable per customer environment.
 
@@ -472,7 +483,7 @@ Expand:
 - Teams / Microsoft 365 integration
 - Additional knowledge sources
 - Automated external research feeds
-- Portfolio analytics
+- Portfolio analytics on Microsoft Fabric / OneLake
 - Technology-to-project outcome tracking
 - Business-value measurement
 
