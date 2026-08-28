@@ -12,7 +12,7 @@ export const Route = createFileRoute("/evaluations/")({
       {
         name: "description",
         content:
-          "Weighted, criteria-based technology evaluations across Halliburton PSLs, each traceable back to its originating technology need.",
+          "Weighted, criteria-based technology evaluations across Contoso PSLs, each traceable back to its originating technology need.",
       },
       { property: "og:title", content: "Evaluations — Digital Scout" },
       {

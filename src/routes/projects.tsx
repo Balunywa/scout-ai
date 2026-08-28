@@ -13,12 +13,12 @@ export const Route = createFileRoute("/projects")({
       {
         name: "description",
         content:
-          "Funded pilots and field deployments arising from Halliburton technology scouting, with the test reports that close the traceability loop.",
+          "Funded pilots and field deployments arising from Contoso technology scouting, with the test reports that close the traceability loop.",
       },
       { property: "og:title", content: "Projects & Field Results — Digital Scout" },
       {
         property: "og:description",
-        content: "Where scouted technology becomes field-proven Halliburton capability.",
+        content: "Where scouted technology becomes field-proven Contoso capability.",
       },
     ],
   }),

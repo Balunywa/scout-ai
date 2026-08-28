@@ -193,7 +193,7 @@ function NeedDetail() {
           <section>
             <SectionHeader
               title="AI-matched companies"
-              description="Ranked by the Company Matching Agent against critical requirements, prior Halliburton evidence and supplier maturity."
+              description="Ranked by the Company Matching Agent against critical requirements, prior Contoso evidence and supplier maturity."
             />
             <div className="space-y-2.5">
               {matches.map((m) => (

@@ -160,7 +160,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(216),
     aiSummary:
-      "Novosense is the strongest technical match in Halliburton's sensor portfolio for >200 °C downhole pressure sensing. Their SiC die survived 1,000 h at 240 °C in Halliburton's Houston lab in 2024. Commercial risk centres on single-source wafer supply and 22-week lead times.",
+      "Novosense is the strongest technical match in Contoso's sensor portfolio for >200 °C downhole pressure sensing. Their SiC die survived 1,000 h at 240 °C in Contoso's Houston lab in 2024. Commercial risk centres on single-source wafer supply and 22-week lead times.",
     needIds: ["n-ht-sensor"],
     evaluationIds: ["e-novosense-1"],
     projectIds: ["p-sensor-pilot"],
@@ -180,7 +180,7 @@ export const companies: Company[] = [
         "Corporate Technology",
         190,
         4,
-        "Responsive engineering team, willing to co-develop a Halliburton-specific package. Pricing at low volume is high.",
+        "Responsive engineering team, willing to co-develop a Contoso-specific package. Pricing at low volume is high.",
         "Scout note, Q1 2026",
       ),
       fb(
@@ -253,7 +253,7 @@ export const companies: Company[] = [
     status: "Approved",
     lastEvaluatedAt: daysAgo(58),
     aiSummary:
-      "Across four Halliburton evaluations, engineers consistently rated material performance highly but identified scale manufacturing and lead time as risks. Coating survives NACE TM0177 Method A at 180 °C; behaviour above 200 °C with elevated H₂S partial pressure is untested.",
+      "Across four Contoso evaluations, engineers consistently rated material performance highly but identified scale manufacturing and lead time as risks. Coating survives NACE TM0177 Method A at 180 °C; behaviour above 200 °C with elevated H₂S partial pressure is untested.",
     needIds: ["n-h2s-coating", "n-h2-pipeline-coating"],
     evaluationIds: ["e-acme-1", "e-acme-2"],
     projectIds: [],
@@ -313,7 +313,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(268),
     aiSummary:
-      "Mature CVD process with uniform coverage on complex internal geometries. Halliburton's 2025 evaluation rated erosion performance highly but recorded hydrogen-charging concerns for high-strength substrates.",
+      "Mature CVD process with uniform coverage on complex internal geometries. Contoso's 2025 evaluation rated erosion performance highly but recorded hydrogen-charging concerns for high-strength substrates.",
     needIds: ["n-h2s-coating", "n-h2-pipeline-coating"],
     evaluationIds: ["e-hardide-1"],
     projectIds: [],
@@ -378,7 +378,7 @@ export const companies: Company[] = [
     relationship: "None",
     status: "Discovered",
     aiSummary:
-      "Newly discovered by the Company Research Agent from a 2026 conference paper. Reports a 40x reduction in hydrogen permeation on X65 coupons. No Halliburton interaction yet; TRL 4 and unproven at scale.",
+      "Newly discovered by the Company Research Agent from a 2026 conference paper. Reports a 40x reduction in hydrogen permeation on X65 coupons. No Contoso interaction yet; TRL 4 and unproven at scale.",
     needIds: ["n-h2-pipeline-coating"],
     evaluationIds: [],
     projectIds: [],
@@ -444,7 +444,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(190),
     aiSummary:
-      "Energy intensity 31% below the incumbent thermal baseline in Halliburton's 2026 bench evaluation. Membrane life under produced-water hydrocarbon loading is unproven beyond 900 hours.",
+      "Energy intensity 31% below the incumbent thermal baseline in Contoso's 2026 bench evaluation. Membrane life under produced-water hydrocarbon loading is unproven beyond 900 hours.",
     needIds: ["n-produced-water"],
     evaluationIds: ["e-osmo-1"],
     projectIds: [],
@@ -477,7 +477,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(110),
     aiSummary:
-      "Highest detection sensitivity of the four methane vendors Halliburton has evaluated, and the only one with an OGMP 2.0 Level 5 reporting package. Cost per wellpad is roughly 2.4x the satellite-based alternatives.",
+      "Highest detection sensitivity of the four methane vendors Contoso has evaluated, and the only one with an OGMP 2.0 Level 5 reporting package. Cost per wellpad is roughly 2.4x the satellite-based alternatives.",
     needIds: ["n-methane"],
     evaluationIds: ["e-methaview-1"],
     projectIds: ["p-methane-permian"],
@@ -510,7 +510,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(240),
     aiSummary:
-      "Low cost per site and no field hardware, but 25 kg/h detection threshold misses the small persistent leaks that dominate Halliburton's measured emissions profile.",
+      "Low cost per site and no field hardware, but 25 kg/h detection threshold misses the small persistent leaks that dominate Contoso's measured emissions profile.",
     needIds: ["n-methane"],
     evaluationIds: ["e-orbital-1"],
     projectIds: [],
@@ -543,7 +543,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(132),
     aiSummary:
-      "Proven in refinery service; oilfield deployment requires Class I Div 2 certification that is currently in progress. Halliburton's evaluation rated navigation reliability highly on graded pads.",
+      "Proven in refinery service; oilfield deployment requires Class I Div 2 certification that is currently in progress. Contoso's evaluation rated navigation reliability highly on graded pads.",
     needIds: ["n-autonomous-inspection"],
     evaluationIds: ["e-rovion-1"],
     projectIds: [],
@@ -575,7 +575,7 @@ export const companies: Company[] = [
     relationship: "Contacted",
     status: "Under Review",
     aiSummary:
-      "Strong autonomy stack and existing BVLOS approvals in Australia. US regulatory pathway is the main deployment gate for Halliburton operations.",
+      "Strong autonomy stack and existing BVLOS approvals in Australia. US regulatory pathway is the main deployment gate for Contoso operations.",
     needIds: ["n-autonomous-inspection"],
     evaluationIds: [],
     projectIds: [],
@@ -598,7 +598,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(168),
     aiSummary:
-      "Highest measured energy density of any high-temperature cell Halliburton has tested (312 Wh/kg at 175 °C). Cycle life collapses above 190 °C, so it does not yet cover the full downhole envelope.",
+      "Highest measured energy density of any high-temperature cell Contoso has tested (312 Wh/kg at 175 °C). Cycle life collapses above 190 °C, so it does not yet cover the full downhole envelope.",
     needIds: ["n-energy-storage", "n-ht-sensor"],
     evaluationIds: ["e-voltcore-1"],
     projectIds: [],
@@ -631,7 +631,7 @@ export const companies: Company[] = [
     status: "Approved",
     lastEvaluatedAt: daysAgo(300),
     aiSummary:
-      "Already a qualified Halliburton supplier for perforating gun electronics. Chemistry is proven but energy density is roughly one third of emerging solid-state options.",
+      "Already a qualified Contoso supplier for perforating gun electronics. Chemistry is proven but energy density is roughly one third of emerging solid-state options.",
     needIds: ["n-energy-storage"],
     evaluationIds: [],
     projectIds: [],
@@ -664,7 +664,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(205),
     aiSummary:
-      "Field-proven with two North Sea operators. Halliburton's evaluation flagged integration complexity with existing control umbilicals as the primary cost driver.",
+      "Field-proven with two North Sea operators. Contoso's evaluation flagged integration complexity with existing control umbilicals as the primary cost driver.",
     needIds: ["n-subsea-power"],
     evaluationIds: ["e-subseavolt-1"],
     projectIds: ["p-subsea-fat"],
@@ -763,7 +763,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(64),
     aiSummary:
-      "Demonstrated a 9% ROP improvement across 14 wells with a third-party operator. Model governance and explainability gaps would need closing before Halliburton could deploy on customer wells.",
+      "Demonstrated a 9% ROP improvement across 14 wells with a third-party operator. Model governance and explainability gaps would need closing before Contoso could deploy on customer wells.",
     needIds: ["n-drilling-automation"],
     evaluationIds: ["e-drillmind-1"],
     projectIds: [],
@@ -795,7 +795,7 @@ export const companies: Company[] = [
     relationship: "Contacted",
     status: "Under Review",
     aiSummary:
-      "Open control interface is unusual in this segment and would reduce Halliburton integration cost. No formal evaluation on record yet.",
+      "Open control interface is unusual in this segment and would reduce Contoso integration cost. No formal evaluation on record yet.",
     needIds: ["n-drilling-automation"],
     evaluationIds: [],
     projectIds: [],
@@ -818,7 +818,7 @@ export const companies: Company[] = [
     status: "Approved",
     lastEvaluatedAt: daysAgo(420),
     aiSummary:
-      "Existing Halliburton analytics supplier. Relevant to the high-temperature sensing need as a complementary measurement rather than a point-sensor replacement.",
+      "Existing Contoso analytics supplier. Relevant to the high-temperature sensing need as a complementary measurement rather than a point-sensor replacement.",
     needIds: ["n-ht-sensor", "n-well-integrity"],
     evaluationIds: [],
     projectIds: [],
@@ -851,7 +851,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(310),
     aiSummary:
-      "Cuts core description turnaround from days to hours. Calibration transfer between labs was the recurring criticism in Halliburton's 2025 evaluation.",
+      "Cuts core description turnaround from days to hours. Calibration transfer between labs was the recurring criticism in Contoso's 2025 evaluation.",
     needIds: ["n-rapid-core"],
     evaluationIds: ["e-coreiq-1"],
     projectIds: [],
@@ -884,7 +884,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(158),
     aiSummary:
-      "Complements rather than replaces a barrier coating. Halliburton data shows 6-month inhibitor persistence at 150 °C; performance drops sharply at 200 °C.",
+      "Complements rather than replaces a barrier coating. Contoso data shows 6-month inhibitor persistence at 150 °C; performance drops sharply at 200 °C.",
     needIds: ["n-h2s-coating"],
     evaluationIds: ["e-nanoshield-1"],
     projectIds: [],
@@ -963,7 +963,7 @@ export const companies: Company[] = [
     status: "Evaluated",
     lastEvaluatedAt: daysAgo(230),
     aiSummary:
-      "Strong wall-loss detection track record. Sensor bonding durability in high-temperature service was the recurring concern across two Halliburton evaluations.",
+      "Strong wall-loss detection track record. Sensor bonding durability in high-temperature service was the recurring concern across two Contoso evaluations.",
     needIds: ["n-well-integrity", "n-h2-pipeline-coating"],
     evaluationIds: ["e-veritas-1"],
     projectIds: [],
@@ -1093,7 +1093,7 @@ export const needs: TechnologyNeed[] = [
       "downhole tools",
     ],
     aiSummary:
-      "Halliburton has evaluated four coating suppliers against this problem since 2024. Acme Advanced Materials is the strongest performer below 180 °C but has no data in the 200 °C + 40 psi H₂S corner of the envelope, which is precisely where the failures occur. Two new entrants have appeared in this space in the last nine months. The requirement itself remains valid — the field failure rate has not improved.",
+      "Contoso has evaluated four coating suppliers against this problem since 2024. Acme Advanced Materials is the strongest performer below 180 °C but has no data in the 200 °C + 40 psi H₂S corner of the envelope, which is precisely where the failures occur. Two new entrants have appeared in this space in the last nine months. The requirement itself remains valid — the field failure rate has not improved.",
     aiSignals: [
       {
         kind: "stale",
@@ -1102,7 +1102,7 @@ export const needs: TechnologyNeed[] = [
       },
       {
         kind: "prior-evaluation",
-        label: "Previous Halliburton evaluation available",
+        label: "Previous Contoso evaluation available",
         detail: "Four evaluations exist from 2024–2026, including coupon data at 180 °C.",
       },
       {
@@ -1207,9 +1207,9 @@ export const needs: TechnologyNeed[] = [
     trlExpectation: "TRL 7",
     followers: ["u-amina", "u-lena", "u-dan"],
     problemStatement:
-      "Permian produced water at 180,000–220,000 mg/L TDS cannot be economically treated for reuse with current thermal approaches. Disposal costs and induced-seismicity restrictions are pushing operators toward on-pad reuse, and Halliburton has no qualified treatment package above 150,000 mg/L TDS.",
+      "Permian produced water at 180,000–220,000 mg/L TDS cannot be economically treated for reuse with current thermal approaches. Disposal costs and induced-seismicity restrictions are pushing operators toward on-pad reuse, and Contoso has no qualified treatment package above 150,000 mg/L TDS.",
     businessImpact:
-      "Reduces customer disposal cost by an estimated $0.42/bbl and positions Halliburton for water-management service contracts worth $25M+ annually.",
+      "Reduces customer disposal cost by an estimated $0.42/bbl and positions Contoso for water-management service contracts worth $25M+ annually.",
     operatingEnvironment: {
       TDS: "180,000 – 220,000 mg/L",
       "Oil in water": "up to 300 mg/L",
@@ -1271,7 +1271,7 @@ export const needs: TechnologyNeed[] = [
     trlExpectation: "TRL 8",
     followers: ["u-nina", "u-marcus", "u-dan", "u-amina"],
     problemStatement:
-      "Regulatory reporting under OGMP 2.0 Level 5 and EPA subpart W requires component-level methane quantification, not screening. Halliburton-operated facilities currently rely on quarterly OGI surveys that miss intermittent and small persistent releases.",
+      "Regulatory reporting under OGMP 2.0 Level 5 and EPA subpart W requires component-level methane quantification, not screening. Contoso-operated facilities currently rely on quarterly OGI surveys that miss intermittent and small persistent releases.",
     businessImpact:
       "Compliance exposure avoidance plus a differentiated emissions-managed service offering. Estimated $6M penalty-risk reduction and a new recurring service line.",
     operatingEnvironment: {
@@ -1327,9 +1327,9 @@ export const needs: TechnologyNeed[] = [
     trlExpectation: "TRL 5",
     followers: ["u-erik", "u-sarah", "u-marcus"],
     problemStatement:
-      "Repurposing existing carbon-steel infrastructure for hydrogen blending introduces embrittlement and permeation risk in high-strength steels. Halliburton needs a barrier coating or surface treatment that measurably reduces hydrogen uptake in X65 and higher-grade line pipe and wellhead components.",
+      "Repurposing existing carbon-steel infrastructure for hydrogen blending introduces embrittlement and permeation risk in high-strength steels. Contoso needs a barrier coating or surface treatment that measurably reduces hydrogen uptake in X65 and higher-grade line pipe and wellhead components.",
     businessImpact:
-      "Positions Halliburton for hydrogen storage and transport service work in Europe and the US Gulf Coast.",
+      "Positions Contoso for hydrogen storage and transport service work in Europe and the US Gulf Coast.",
     operatingEnvironment: {
       Medium: "Up to 100% H₂, 20 – 100 bar",
       Temperature: "-20 °C to 80 °C",
@@ -1531,7 +1531,7 @@ export const needs: TechnologyNeed[] = [
     ],
     keywords: ["subsea", "power distribution", "all-electric", "step-out", "wet-mate"],
     aiSummary:
-      "SubseaVolt's evaluation scored well on hardware maturity and poorly on integration complexity with Halliburton's control architecture. The factory acceptance test passed with two observations, both documented in the 2026 report.",
+      "SubseaVolt's evaluation scored well on hardware maturity and poorly on integration complexity with Contoso's control architecture. The factory acceptance test passed with two observations, both documented in the 2026 report.",
     aiSignals: [],
     companyIds: ["c-subseavolt", "c-arcflow"],
     evaluationIds: ["e-subseavolt-1"],
@@ -1621,7 +1621,7 @@ export const needs: TechnologyNeed[] = [
       "No dependency on cloud connectivity for the control loop",
       "Must interoperate with third-party rig control systems",
     ],
-    desiredOutcome: "A validated, explainable closed-loop optimisation capability on Halliburton rigs.",
+    desiredOutcome: "A validated, explainable closed-loop optimisation capability on Contoso rigs.",
     timeline: "Field validation Q2 2027.",
     existingApproaches: "Advisory dashboards, driller-in-the-loop parameter roadmaps.",
     requirements: [
@@ -1741,7 +1741,7 @@ export const needs: TechnologyNeed[] = [
       },
       {
         kind: "similar",
-        label: "Reusable Halliburton knowledge",
+        label: "Reusable Contoso knowledge",
         detail: "Sensor packaging findings from NEED-2024-076 apply directly.",
       },
     ],
@@ -2066,7 +2066,7 @@ export const evaluations: Evaluation[] = [
       crit("fit", "Technology fit", 5, 3, "Die survived 1,000 h at 240 °C with 0.4% FS drift — exceeds the requirement."),
       crit("tech-maturity", "Technical maturity", 4, 3, "Aerospace-qualified die; downhole packaging is new."),
       crit("comm-maturity", "Commercial maturity", 3, 2, "Single wafer source; 22-week lead time."),
-      crit("integration", "Integration complexity", 3, 2, "Requires a Halliburton-specific package and sealing glass qualification."),
+      crit("integration", "Integration complexity", 3, 2, "Requires a Contoso-specific package and sealing glass qualification."),
       crit("scalability", "Scalability", 3, 2, "Wafer supply is the constraint above 1,000 units/yr."),
       crit("differentiation", "Differentiation", 5, 1, "Few credible SiC pressure platforms exist at this temperature."),
       crit("strategic", "Strategic relevance", 5, 2, "Unlocks the HPHT tool roadmap."),
@@ -2338,7 +2338,7 @@ export const evaluations: Evaluation[] = [
       crit("fit", "Technology fit", 4, 3, "Meets depth and step-out requirements with margin."),
       crit("tech-maturity", "Technical maturity", 5, 3, "Field-proven with two North Sea operators."),
       crit("comm-maturity", "Commercial maturity", 4, 2, "Established Norwegian supplier."),
-      crit("integration", "Integration complexity", 2, 2, "Documentation assumes an engineering process Halliburton does not run."),
+      crit("integration", "Integration complexity", 2, 2, "Documentation assumes an engineering process Contoso does not run."),
       crit("scalability", "Scalability", 4, 2, "Production capacity adequate."),
       crit("differentiation", "Differentiation", 4, 1, "Condition monitoring integration is ahead of competitors."),
       crit("strategic", "Strategic relevance", 4, 2, "Required for all-electric tender participation."),
@@ -2446,7 +2446,7 @@ export const evaluations: Evaluation[] = [
       crit("differentiation", "Differentiation", 4, 1, "Genuine closed-loop control rather than advisory output."),
       crit("strategic", "Strategic relevance", 5, 2, "Directly supports the automation strategy."),
       crit("risk", "Risks", 1, 2, "Model is a black box; training provenance not shared. Fails a critical requirement."),
-      crit("testing", "Testing requirements", 3, 1, "Independent validation on Halliburton wells required."),
+      crit("testing", "Testing requirements", 3, 1, "Independent validation on Contoso wells required."),
     ],
     recommendation: {
       decision: "Do not progress without model governance commitments",
@@ -2790,7 +2790,7 @@ export const reports: TestReport[] = [
       "All electrical performance criteria met at simulated 120 km step-out",
       "Hyperbaric test to 3,300 m equivalent passed with no ingress",
       "Observation 1: condition-monitoring telemetry format not aligned to our SCADA schema",
-      "Observation 2: wet-mate connector torque procedure requires Halliburton-specific documentation",
+      "Observation 2: wet-mate connector torque procedure requires Contoso-specific documentation",
     ],
     outcome: "Pass",
   },
@@ -2938,7 +2938,7 @@ export const knowledgeDocs: KnowledgeDoc[] = [
     at: daysAgo(520),
     author: "Sarah Whitfield",
     excerpt:
-      "Defines the Halliburton internal interpretation of ISO 15156 for coated tool bodies, including the required coupon matrix and acceptance criteria.",
+      "Defines the Contoso internal interpretation of ISO 15156 for coated tool bodies, including the required coupon matrix and acceptance criteria.",
     origin: "internal",
   },
   {
@@ -3183,7 +3183,7 @@ export const follows: FollowItem[] = [
     type: "company",
     entityId: "c-acme-materials",
     label: "Acme Advanced Materials",
-    meta: "Materials & Coatings · Supplier · 4 Halliburton evaluations",
+    meta: "Materials & Coatings · Supplier · 4 Contoso evaluations",
     since: daysAgo(300),
   },
   {

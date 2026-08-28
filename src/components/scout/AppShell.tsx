@@ -90,7 +90,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </span>
           <div className="leading-tight">
             <p className="text-[14px] font-semibold tracking-tight">Digital Scout</p>
-            <p className="text-[11px] text-sidebar-foreground/60">Halliburton Technology</p>
+            <p className="text-[11px] text-sidebar-foreground/60">Contoso Technology</p>
           </div>
         </div>
 
@@ -178,7 +178,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Search needs, companies, evaluations, projects, reports…" />
         <CommandList className="max-h-[420px]">
-          <CommandEmpty>No matching Halliburton knowledge.</CommandEmpty>
+          <CommandEmpty>No matching Contoso knowledge.</CommandEmpty>
           <CommandGroup heading="Go to">
             <CommandItem onSelect={() => go("/ask")}>Ask Digital Scout</CommandItem>
             <CommandItem onSelect={() => go("/knowledge")}>Knowledge search</CommandItem>

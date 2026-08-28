@@ -349,8 +349,8 @@ export async function search(query: string): Promise<SearchResponse> {
   const companyCount = top.filter((h) => h.type === "company").length;
 
   const summary = top.length
-    ? `Halliburton has prior work related to "${query}". Digital Scout found ${needCount} technology need${needCount === 1 ? "" : "s"}, ${companyCount} compan${companyCount === 1 ? "y" : "ies"} and ${evalCount} evaluation${evalCount === 1 ? "" : "s"} in the internal knowledge index. The strongest match is ${top[0]!.title}. Review the internal evidence below before starting new work.`
-    : `No indexed Halliburton knowledge matched "${query}". Digital Scout can start an external discovery run through the Company Research Agent.`;
+    ? `Contoso has prior work related to "${query}". Digital Scout found ${needCount} technology need${needCount === 1 ? "" : "s"}, ${companyCount} compan${companyCount === 1 ? "y" : "ies"} and ${evalCount} evaluation${evalCount === 1 ? "" : "s"} in the internal knowledge index. The strongest match is ${top[0]!.title}. Review the internal evidence below before starting new work.`
+    : `No indexed Contoso knowledge matched "${query}". Digital Scout can start an external discovery run through the Company Research Agent.`;
 
   return {
     query,
@@ -427,14 +427,14 @@ export async function getRecommendations(needId: string): Promise<CompanyMatch[]
         reasons.push(`${company.maturity} technology maturity reduces qualification risk`);
       reasons.push(`${company.technologyAreas[0]} directly addresses the primary requirement`);
       if (evals.length)
-        reasons.push(`Existing Halliburton evaluation (${evals[0]!.ref}) with recorded results`);
-      if (company.external) reasons.push("Newly discovered externally — no Halliburton history yet");
+        reasons.push(`Existing Contoso evaluation (${evals[0]!.ref}) with recorded results`);
+      if (company.external) reasons.push("Newly discovered externally — no Contoso history yet");
 
       const risks: string[] = [];
       const lowest = [...(evals[0]?.criteria ?? [])].sort((a, b) => a.score - b.score)[0];
       if (lowest) risks.push(`${lowest.label}: ${lowest.comment}`);
       if (gaps.length) risks.push(`${gaps.length} critical requirement(s) unproven`);
-      if (!evals.length) risks.push("No Halliburton evaluation on record");
+      if (!evals.length) risks.push("No Contoso evaluation on record");
 
       return {
         company,
@@ -444,7 +444,7 @@ export async function getRecommendations(needId: string): Promise<CompanyMatch[]
         gaps,
         priorInteraction:
           company.relationship === "None"
-            ? "No prior Halliburton interaction"
+            ? "No prior Contoso interaction"
             : `${company.relationship}${company.lastEvaluatedAt ? ` · last evaluated ${daysSince(company.lastEvaluatedAt)} days ago` : ""}`,
         risks,
         evidence: [
@@ -472,7 +472,7 @@ export async function listFollows() {
 
 export function knowledgeResurfaced() {
   return {
-    headline: "Halliburton evaluated 4 companies addressing similar requirements in 2023–2026.",
+    headline: "Contoso evaluated 4 companies addressing similar requirements in 2023–2026.",
     detail:
       "Your sour-service coating need overlaps with the hydrogen coating programme in Testing & Subsea. Two suppliers appear in both, and coupon data already exists at 180 °C.",
     needId: "n-h2s-coating",

@@ -108,7 +108,7 @@ function CompanyDetail() {
                   {
                     label: "Sources synthesised",
                     detail:
-                      "Public technical literature, supplier datasheets, Halliburton evaluation records and engineer feedback.",
+                      "Public technical literature, supplier datasheets, Contoso evaluation records and engineer feedback.",
                   },
                   {
                     label: "Relationship",
@@ -146,7 +146,7 @@ function CompanyDetail() {
           <section>
             <SectionHeader
               title="Evaluations"
-              description="Every structured assessment Halliburton has run on this company."
+              description="Every structured assessment Contoso has run on this company."
             />
             <div className="space-y-2.5">
               {c.evaluationIds.length ? (
@@ -182,7 +182,7 @@ function CompanyDetail() {
                 })
               ) : (
                 <p className="panel p-4 text-[13px] text-muted-foreground">
-                  No Halliburton evaluation on record for this company yet.
+                  No Contoso evaluation on record for this company yet.
                 </p>
               )}
             </div>
@@ -293,7 +293,7 @@ function CompanyDetail() {
                 ["Evaluations", String(c.evaluationIds.length)],
                 ["Projects", String(c.projectIds.length)],
                 ["Last evaluated", c.lastEvaluatedAt ? ageLabel(c.lastEvaluatedAt) : "Never"],
-                ["Discovery", c.external ? "External discovery agent" : "Halliburton knowledge"],
+                ["Discovery", c.external ? "External discovery agent" : "Contoso knowledge"],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between gap-3">
                   <span className="text-muted-foreground">{k}</span>

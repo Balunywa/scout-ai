@@ -1,22 +1,22 @@
 # Scout AI
 
-Build a production-quality enterprise web application called Digital Scout for Halliburton.
+Build a production-quality enterprise web application called Digital Scout for Contoso.
 
 Product Goal
 
-Digital Scout modernizes Halliburton’s Technology Scout process into an AI-driven engineering discovery platform.
+Digital Scout modernizes Contoso’s Technology Scout process into an AI-driven engineering discovery platform.
 
-Today, Halliburton Technology Scouts receive technology needs from Product Service Lines (PSLs), manually research companies and technologies, collect feedback through email/files, and return recommendations.
+Today, Contoso Technology Scouts receive technology needs from Product Service Lines (PSLs), manually research companies and technologies, collect feedback through email/files, and return recommendations.
 
 The existing process relies heavily on Power Apps/Appian, SharePoint, manual forms, manual research, and knowledge held by individual scouts.
 
-The new experience should make technology scouting part of everyday engineering work and be usable by approximately 2,000 Halliburton engineers and technologists, not just the Scout organization.
+The new experience should make technology scouting part of everyday engineering work and be usable by approximately 2,000 Contoso engineers and technologists, not just the Scout organization.
 
 This should NOT look like a generic CRM, SharePoint replacement, or traditional form application.
 
 The primary experience should feel like:
 
-“Tell Digital Scout what problem you are trying to solve, and let AI help you find what Halliburton already knows, what exists externally, and what should happen next.”
+“Tell Digital Scout what problem you are trying to solve, and let AI help you find what Contoso already knows, what exists externally, and what should happen next.”
 
 Core Design Principles
 
@@ -32,7 +32,7 @@ Knowledge reuse
 
 Before creating a new technology need, surface related existing needs, evaluations, companies, projects, and reports.
 
-Prevent engineers from repeating work Halliburton has already performed.
+Prevent engineers from repeating work Contoso has already performed.
 
 Traceability
 Everything should connect across the lifecycle:
@@ -75,7 +75,7 @@ Use:
 
 Microsoft Entra ID
 
-Halliburton corporate identities
+Contoso corporate identities
 
 Role-based access control
 
@@ -129,7 +129,7 @@ Need Definition Agent
 Helps an engineer turn an initial idea/problem into a well-defined technology need.
 
 Knowledge Agent
-Searches Halliburton’s existing technology scouting knowledge.
+Searches Contoso’s existing technology scouting knowledge.
 
 Company Discovery Agent
 Identifies potentially relevant companies and technologies.
@@ -166,7 +166,7 @@ Scout notes
 
 The UX should clearly distinguish between:
 
-Halliburton internal knowledge
+Contoso internal knowledge
 
 and
 
@@ -228,7 +228,7 @@ highly polished
 
 information dense without feeling crowded
 
-subtle Halliburton red accents
+subtle Contoso red accents
 
 neutral backgrounds
 
@@ -290,13 +290,13 @@ What technology problem are you trying to solve?
 
 Immediately show an AI input box:
 
-Describe a technology challenge, search for something Halliburton has evaluated, or ask Digital Scout a question…
+Describe a technology challenge, search for something Contoso has evaluated, or ask Digital Scout a question…
 
 Suggested examples:
 
 “We need a coating that can survive high-temperature H₂S environments.”
 
-“Has Halliburton evaluated alternatives to lithium batteries for downhole sensors?”
+“Has Contoso evaluated alternatives to lithium batteries for downhole sensors?”
 
 “Find companies working on produced-water treatment.”
 
@@ -361,11 +361,11 @@ recent activity
 
 Knowledge resurfaced
 
-Show older Halliburton work that may be useful now.
+Show older Contoso work that may be useful now.
 
 Example:
 
-Halliburton evaluated 4 companies addressing similar requirements in 2023.
+Contoso evaluated 4 companies addressing similar requirements in 2023.
 
 Button:
 
@@ -533,7 +533,7 @@ No activity in 180 days
 
 3 newly discovered companies
 
-Previous Halliburton evaluation available
+Previous Contoso evaluation available
 
 4. Technology Need Detail
 
@@ -609,7 +609,7 @@ Why it matches
 
 Requirement coverage
 
-Prior Halliburton interaction
+Prior Contoso interaction
 
 Existing evaluations
 
@@ -627,13 +627,13 @@ Operating temperature >225°C
 
 Downhole-qualified sensor platform
 
-Existing Halliburton evaluation from 2024
+Existing Contoso evaluation from 2024
 
 Button:
 
 Why this recommendation?
 
-Related Halliburton Knowledge
+Related Contoso Knowledge
 
 Show:
 
@@ -679,13 +679,13 @@ Evaluation status
 PSL
 Country
 Technology readiness
-Prior Halliburton engagement
+Prior Contoso engagement
 
 Cards/table should show:
 
 Company
 Technology areas
-Halliburton evaluations
+Contoso evaluations
 Related needs
 Current status
 Last evaluated
@@ -708,13 +708,13 @@ Headquarters
 
 Technology maturity
 
-Halliburton relationship
+Contoso relationship
 
 Last evaluated
 
 AI-generated summary:
 
-Why this company matters to Halliburton
+Why this company matters to Contoso
 
 Tabs:
 
@@ -734,7 +734,7 @@ Activity
 
 Include:
 
-Halliburton Experience
+Contoso Experience
 
 Show previous feedback from multiple engineers.
 
@@ -744,7 +744,7 @@ Example:
 
 Digital Scout summary
 
-Across four Halliburton evaluations, engineers consistently rated the material performance highly but identified scale manufacturing and lead time as risks.
+Across four Contoso evaluations, engineers consistently rated the material performance highly but identified scale manufacturing and lead time as risks.
 
 Then provide source links.
 
@@ -856,7 +856,7 @@ Create a dedicated semantic knowledge explorer.
 
 Search prompt:
 
-Search everything Halliburton knows about a technology…
+Search everything Contoso knows about a technology…
 
 Example query:
 
@@ -908,7 +908,7 @@ A Technology Need you follow has not received activity in 120 days.
 
 A new test report was added to a company you follow.
 
-Three Halliburton engineers evaluated a technology related to autonomous drilling this month.
+Three Contoso engineers evaluated a technology related to autonomous drilling this month.
 
 11. Scout Workspace
 
@@ -1107,7 +1107,7 @@ Specialized Agents
 
 Need Definition Agent
 
-Halliburton Knowledge Agent
+Contoso Knowledge Agent
 
 Company Research Agent
 
@@ -1117,7 +1117,7 @@ Recommendation Agent
 
 ↓
 
-Azure AI Search + Halliburton Data
+Azure AI Search + Contoso Data
 
 ↓
 
@@ -1141,7 +1141,7 @@ Asks several intelligent clarification questions.
 
 Extracts the technical requirements.
 
-Searches Halliburton's previous technology work.
+Searches Contoso's previous technology work.
 
 Finds similar technology needs.
 
@@ -1167,7 +1167,7 @@ Product Message
 
 The product should communicate one simple idea throughout the experience:
 
-Halliburton should never have to rediscover what Halliburton already knows.
+Contoso should never have to rediscover what Contoso already knows.
 
 Digital Scout captures engineering knowledge, combines it with external technology intelligence, and uses AI to help engineers move from a technology problem to an in
 

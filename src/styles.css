@@ -6,7 +6,7 @@
 
 /*
  * Digital Scout design system — Microsoft-enterprise neutrals with
- * Halliburton red accents. All colors are oklch semantic tokens.
+ * Contoso red accents. All colors are oklch semantic tokens.
  */
 
 @theme inline {
@@ -79,7 +79,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.215 0.012 260);
 
-  /* Halliburton red */
+  /* Contoso red */
   --primary: oklch(0.503 0.196 27.5);
   --primary-foreground: oklch(0.99 0.005 60);
 
@@ -102,7 +102,7 @@
   --info: oklch(0.53 0.13 250);
   --info-foreground: oklch(0.99 0.005 250);
 
-  /* AI / agent signal — deep azure, distinct from Halliburton red */
+  /* AI / agent signal — deep azure, distinct from Contoso red */
   --ai: oklch(0.48 0.135 258);
   --ai-foreground: oklch(0.99 0.004 250);
   --ai-muted: oklch(0.955 0.02 258);

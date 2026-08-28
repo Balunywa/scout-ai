@@ -25,12 +25,12 @@ export const Route = createFileRoute("/knowledge")({
       {
         name: "description",
         content:
-          "Semantic search across Halliburton scouting knowledge: needs, companies, evaluations, field reports, scout notes and SharePoint documents.",
+          "Semantic search across Contoso scouting knowledge: needs, companies, evaluations, field reports, scout notes and SharePoint documents.",
       },
       { property: "og:title", content: "Knowledge Search — Digital Scout" },
       {
         property: "og:description",
-        content: "Search everything Halliburton already knows before scouting something new.",
+        content: "Search everything Contoso already knows before scouting something new.",
       },
     ],
   }),
@@ -77,7 +77,7 @@ function KnowledgePage() {
 
       {isFetching ? (
         <p className="mt-5 flex items-center gap-2 text-[13px] text-muted-foreground">
-          <Sparkles className="size-4 animate-pulse text-ai" /> Searching Halliburton knowledge…
+          <Sparkles className="size-4 animate-pulse text-ai" /> Searching Contoso knowledge…
         </p>
       ) : null}
 

@@ -78,7 +78,7 @@ export function AiBadge({
 export function OriginBadge({ origin }: { origin: "internal" | "external" }) {
   return origin === "internal" ? (
     <span className="inline-flex items-center gap-1 rounded-md border border-primary/25 bg-primary/8 px-1.5 py-0.5 text-[11px] font-semibold text-primary">
-      <ShieldCheck className="size-3" /> Halliburton knowledge
+      <ShieldCheck className="size-3" /> Contoso knowledge
     </span>
   ) : (
     <span className="inline-flex items-center gap-1 rounded-md border border-border-strong bg-muted px-1.5 py-0.5 text-[11px] font-semibold text-muted-foreground">

@@ -21,12 +21,12 @@ export const Route = createFileRoute("/companies/")({
       {
         name: "description",
         content:
-          "Halliburton's catalog of scouted and evaluated technology suppliers, with maturity, relationship status, engineer feedback and linked evaluations.",
+          "Contoso's catalog of scouted and evaluated technology suppliers, with maturity, relationship status, engineer feedback and linked evaluations.",
       },
       { property: "og:title", content: "Company Catalog — Digital Scout" },
       {
         property: "og:description",
-        content: "Browse every technology supplier Halliburton has scouted or evaluated.",
+        content: "Browse every technology supplier Contoso has scouted or evaluated.",
       },
     ],
   }),
@@ -72,7 +72,7 @@ function CompaniesIndex() {
       <PageHeader
         eyebrow="Catalog"
         title="Companies"
-        description="Suppliers, startups and research groups scouted for Halliburton technology needs — evaluated, piloted or newly discovered."
+        description="Suppliers, startups and research groups scouted for Contoso technology needs — evaluated, piloted or newly discovered."
       />
 
       <div className="panel mt-5 flex flex-wrap items-center gap-2 p-3">
@@ -103,7 +103,7 @@ function CompaniesIndex() {
           className="h-9 rounded-md border border-input bg-background px-2.5 text-[13px]"
         >
           <option value="">Internal and external</option>
-          <option value="internal">Halliburton knowledge</option>
+          <option value="internal">Contoso knowledge</option>
           <option value="external">Externally discovered</option>
         </select>
         <span className="ml-auto text-[12px] text-muted-foreground">

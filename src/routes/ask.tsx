@@ -26,13 +26,13 @@ export const Route = createFileRoute("/ask")({
   }),
   head: () => ({
     meta: [
-      { title: "Ask Digital Scout — Halliburton" },
+      { title: "Ask Digital Scout — Contoso" },
       {
         name: "description",
         content:
-          "Conversational technology-need intake. Digital Scout searches Halliburton's prior scouting work, asks clarifying questions and drafts a structured technology need.",
+          "Conversational technology-need intake. Digital Scout searches Contoso's prior scouting work, asks clarifying questions and drafts a structured technology need.",
       },
-      { property: "og:title", content: "Ask Digital Scout — Halliburton" },
+      { property: "og:title", content: "Ask Digital Scout — Contoso" },
       {
         property: "og:description",
         content: "Turn a technology problem into a structured, traceable technology need.",
@@ -106,7 +106,7 @@ const TURNS: {
   draft: Partial<Draft>;
 }[] = [
   {
-    agent: "Halliburton Knowledge Agent",
+    agent: "Contoso Knowledge Agent",
     text: "I found 7 related technology needs and 12 previous company evaluations touching sour-service coatings above 180 °C. Before creating another request, let's determine whether any of those already address this problem.\n\nThe closest match is NEED-2025-118, owned by Sarah Whitfield, which has four completed evaluations and a coupon test campaign at 180 °C. What pressure and H₂S partial pressure does your application see?",
     cards: [
       { kind: "need", id: "n-h2s-coating" },
@@ -124,9 +124,9 @@ const TURNS: {
   },
   {
     agent: "Need Definition Agent",
-    text: "Understood — 20,000 psi with 40 psi H₂S partial pressure puts you outside every coupon dataset Halliburton holds. Our 2026 campaign stopped at 180 °C and 15 psi H₂S.\n\nTwo more questions: what is the required exposure duration, and are there geometry constraints such as internal bores that rule out line-of-sight deposition?",
+    text: "Understood — 20,000 psi with 40 psi H₂S partial pressure puts you outside every coupon dataset Contoso holds. Our 2026 campaign stopped at 180 °C and 15 psi H₂S.\n\nTwo more questions: what is the required exposure duration, and are there geometry constraints such as internal bores that rule out line-of-sight deposition?",
     gaps: [
-      "No Halliburton data at 200 °C with 40 psi H₂S partial pressure",
+      "No Contoso data at 200 °C with 40 psi H₂S partial pressure",
       "Metallon amorphous coating fails the internal-bore requirement (line-of-sight process)",
     ],
     draft: {
@@ -157,7 +157,7 @@ const TURNS: {
   },
   {
     agent: "Scout Agent",
-    text: "Digital Scout has enough information to create this Technology Need.\n\nI have also run an external discovery pass. Two suppliers outside Halliburton's evaluated set publish sour-service data in your envelope, and one existing supplier — Acme Advanced Materials — has offered to cost-share an autoclave campaign that would close the exact data gap you have described. On creation I will route this to Marcus Adeyemi, the scout covering materials and coatings, and link it to NEED-2025-118 so the coupon data travels with it.",
+    text: "Digital Scout has enough information to create this Technology Need.\n\nI have also run an external discovery pass. Two suppliers outside Contoso's evaluated set publish sour-service data in your envelope, and one existing supplier — Acme Advanced Materials — has offered to cost-share an autoclave campaign that would close the exact data gap you have described. On creation I will route this to Marcus Adeyemi, the scout covering materials and coatings, and link it to NEED-2025-118 so the coupon data travels with it.",
     cards: [
       { kind: "company", id: "c-acme-materials" },
       { kind: "company", id: "c-hydrashield" },
@@ -305,12 +305,12 @@ function AskPage() {
                 <h1 className="mt-4 text-[20px] font-semibold tracking-tight">Ask Digital Scout</h1>
                 <p className="mx-auto mt-1.5 max-w-lg text-[13px] leading-relaxed text-muted-foreground">
                   Describe the technology problem you are trying to solve. Digital Scout searches what
-                  Halliburton already knows before anything new is created.
+                  Contoso already knows before anything new is created.
                 </p>
                 <div className="mx-auto mt-5 grid max-w-xl gap-2 text-left">
                   {[
                     "I need a coating for a downhole tool operating in an H₂S environment above 180 °C.",
-                    "Has Halliburton evaluated alternatives to lithium batteries for downhole sensors?",
+                    "Has Contoso evaluated alternatives to lithium batteries for downhole sensors?",
                     "Find companies working on produced-water treatment.",
                   ].map((s) => (
                     <button
@@ -351,7 +351,7 @@ function AskPage() {
                     {m.gaps?.length ? (
                       <div className="mt-3 rounded-md border border-warning/35 bg-warning/10 px-3.5 py-2.5">
                         <p className="text-[12px] font-semibold text-warning-foreground">
-                          Gaps between your requirement and previous Halliburton work
+                          Gaps between your requirement and previous Contoso work
                         </p>
                         <ul className="mt-1.5 space-y-1">
                           {m.gaps.map((g) => (
@@ -380,7 +380,7 @@ function AskPage() {
                 <span className="flex size-7 items-center justify-center rounded-md bg-ai/12">
                   <Sparkles className="size-3.5 animate-pulse text-ai" />
                 </span>
-                Searching Halliburton knowledge and prior evaluations…
+                Searching Contoso knowledge and prior evaluations…
               </div>
             ) : null}
           </div>
@@ -405,7 +405,7 @@ function AskPage() {
             </Button>
           </div>
           <p className="mx-auto mt-2 max-w-3xl text-[11px] text-muted-foreground">
-            Digital Scout cites Halliburton sources where possible. Review AI-extracted fields before
+            Digital Scout cites Contoso sources where possible. Review AI-extracted fields before
             creating a Technology Need.
           </p>
         </div>

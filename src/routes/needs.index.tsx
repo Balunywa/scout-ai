@@ -24,12 +24,12 @@ export const Route = createFileRoute("/needs/")({
       {
         name: "description",
         content:
-          "Every Halliburton technology need in one traceable register: status, owning PSL, assigned scout, linked evaluations and AI staleness signals.",
+          "Every Contoso technology need in one traceable register: status, owning PSL, assigned scout, linked evaluations and AI staleness signals.",
       },
       { property: "og:title", content: "Technology Needs — Digital Scout" },
       {
         property: "og:description",
-        content: "Search and filter the Halliburton technology need register.",
+        content: "Search and filter the Contoso technology need register.",
       },
     ],
   }),

@@ -41,12 +41,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Personalised technology scouting workspace: needs requiring attention, AI recommendations, resurfaced Halliburton knowledge and recent lifecycle activity.",
+          "Personalised technology scouting workspace: needs requiring attention, AI recommendations, resurfaced Contoso knowledge and recent lifecycle activity.",
       },
       { property: "og:title", content: "My Scout Dashboard — Digital Scout" },
       {
         property: "og:description",
-        content: "Start from a technology problem and let Digital Scout find what Halliburton already knows.",
+        content: "Start from a technology problem and let Digital Scout find what Contoso already knows.",
       },
     ],
   }),
@@ -55,7 +55,7 @@ export const Route = createFileRoute("/")({
 
 const SUGGESTIONS = [
   "We need a coating that can survive high-temperature H₂S environments.",
-  "Has Halliburton evaluated alternatives to lithium batteries for downhole sensors?",
+  "Has Contoso evaluated alternatives to lithium batteries for downhole sensors?",
   "Find companies working on produced-water treatment.",
   "What technologies have we evaluated for methane detection?",
   "Show me technologies related to autonomous wellsite operations.",
@@ -146,7 +146,7 @@ function Dashboard() {
             <Sparkles className="size-4 text-ai" />
             <p className="text-[13px] font-semibold text-ai">Digital Scout</p>
             <p className="text-[12px] text-muted-foreground">
-              Orchestrator agent · connected to Halliburton knowledge and external discovery
+              Orchestrator agent · connected to Contoso knowledge and external discovery
             </p>
           </div>
           <div className="p-4">
@@ -156,7 +156,7 @@ function Dashboard() {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
               }}
-              placeholder="Describe a technology challenge, search for something Halliburton has evaluated, or ask Digital Scout a question…"
+              placeholder="Describe a technology challenge, search for something Contoso has evaluated, or ask Digital Scout a question…"
               className="min-h-[92px] resize-none border-0 bg-transparent p-0 text-[14px] shadow-none focus-visible:ring-0"
             />
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
@@ -294,7 +294,7 @@ function Dashboard() {
           <section>
             <SectionHeader
               title="Knowledge resurfaced"
-              description="Older Halliburton work that is relevant to what you are doing now."
+              description="Older Contoso work that is relevant to what you are doing now."
             />
             <div className="panel ai-surface p-4">
               <div className="flex items-start gap-3">
@@ -377,7 +377,7 @@ function Dashboard() {
               ))}
             </dl>
             <p className="mt-3 border-t border-border pt-3 text-[12px] italic leading-relaxed text-muted-foreground">
-              Halliburton should never have to rediscover what Halliburton already knows.
+              Contoso should never have to rediscover what Contoso already knows.
             </p>
           </div>
         </aside>

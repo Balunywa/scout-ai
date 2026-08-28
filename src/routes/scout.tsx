@@ -24,7 +24,7 @@ export const Route = createFileRoute("/scout")({
       {
         name: "description",
         content:
-          "Technology scout cockpit: assigned needs, discovery queue of externally surfaced companies, and portfolio signals across Halliburton PSLs.",
+          "Technology scout cockpit: assigned needs, discovery queue of externally surfaced companies, and portfolio signals across Contoso PSLs.",
       },
       { property: "og:title", content: "Scout Workspace — Digital Scout" },
       {
