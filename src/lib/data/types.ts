@@ -140,13 +140,13 @@ export interface Company {
     | "Supplier"
     | "Strategic Partner";
   status: "Discovered" | "Under Review" | "Evaluated" | "Piloting" | "Approved" | "Declined";
-  lastEvaluatedAt?: string;
+  lastEvaluatedAt?: string | undefined;
   aiSummary: string;
   needIds: string[];
   evaluationIds: string[];
   projectIds: string[];
   feedback: EngineerFeedback[];
-  external?: boolean;
+  external?: boolean | undefined;
 }
 
 export interface EvaluationCriterion {
@@ -155,7 +155,7 @@ export interface EvaluationCriterion {
   score: number;
   weight: number;
   comment: string;
-  aiAssist?: string;
+  aiAssist?: string | undefined;
 }
 
 export interface Evaluation {
@@ -198,7 +198,7 @@ export interface TestReport {
   id: string;
   ref: string;
   title: string;
-  projectId?: string;
+  projectId?: string | undefined;
   companyId: string;
   needId: string;
   uploadedBy: string;
