@@ -77,14 +77,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Digital Scout — Halliburton Technology Scouting" },
+      {
+        name: "description",
+        content:
+          "AI-driven technology discovery for Halliburton engineers: define technology needs, reuse prior evaluations, and trace technologies from need to field outcome.",
+      },
+      { name: "author", content: "Halliburton" },
+      { property: "og:title", content: "Digital Scout — Halliburton Technology Scouting" },
+      {
+        property: "og:description",
+        content:
+          "Halliburton should never have to rediscover what Halliburton already knows.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -94,6 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
