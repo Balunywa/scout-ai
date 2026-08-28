@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { Sparkles, Building2, Globe2, ShieldCheck, Info } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -130,9 +129,9 @@ export function WhyThis({
             <ul className="space-y-1">
               {sources.map((s) => (
                 <li key={s.href + s.label}>
-                  <Link to={s.href} className="text-xs text-ai hover:underline">
+                  <a href={s.href} className="text-xs text-ai hover:underline">
                     {s.label}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
