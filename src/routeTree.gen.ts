@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AskRouteImport } from './routes/ask'
 import { Route as CompaniesIndexRouteImport } from './routes/companies.index'
+import { Route as CompaniesCompanyIdRouteImport } from './routes/companies.$companyId'
 import { Route as NeedsIndexRouteImport } from './routes/needs.index'
 import { Route as NeedsNeedIdRouteImport } from './routes/needs.$needId'
 
@@ -30,6 +31,11 @@ const CompaniesIndexRoute = CompaniesIndexRouteImport.update({
   path: '/companies/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompaniesCompanyIdRoute = CompaniesCompanyIdRouteImport.update({
+  id: '/companies/$companyId',
+  path: '/companies/$companyId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NeedsIndexRoute = NeedsIndexRouteImport.update({
   id: '/needs/',
   path: '/needs/',
@@ -44,6 +50,7 @@ const NeedsNeedIdRoute = NeedsNeedIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
+  '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
   '/companies/': typeof CompaniesIndexRoute
   '/needs/': typeof NeedsIndexRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
+  '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
   '/companies': typeof CompaniesIndexRoute
   '/needs': typeof NeedsIndexRoute
@@ -59,21 +67,42 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
+  '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
   '/companies/': typeof CompaniesIndexRoute
   '/needs/': typeof NeedsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ask' | '/needs/$needId' | '/companies/' | '/needs/'
+  fullPaths:
+    | '/'
+    | '/ask'
+    | '/companies/$companyId'
+    | '/needs/$needId'
+    | '/companies/'
+    | '/needs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ask' | '/needs/$needId' | '/companies' | '/needs'
-  id: '__root__' | '/' | '/ask' | '/needs/$needId' | '/companies/' | '/needs/'
+  to:
+    | '/'
+    | '/ask'
+    | '/companies/$companyId'
+    | '/needs/$needId'
+    | '/companies'
+    | '/needs'
+  id:
+    | '__root__'
+    | '/'
+    | '/ask'
+    | '/companies/$companyId'
+    | '/needs/$needId'
+    | '/companies/'
+    | '/needs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AskRoute: typeof AskRoute
+  CompaniesCompanyIdRoute: typeof CompaniesCompanyIdRoute
   NeedsNeedIdRoute: typeof NeedsNeedIdRoute
   CompaniesIndexRoute: typeof CompaniesIndexRoute
   NeedsIndexRoute: typeof NeedsIndexRoute
@@ -102,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompaniesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/companies/$companyId': {
+      id: '/companies/$companyId'
+      path: '/companies/$companyId'
+      fullPath: '/companies/$companyId'
+      preLoaderRoute: typeof CompaniesCompanyIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/needs/': {
       id: '/needs/'
       path: '/needs'
@@ -122,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AskRoute: AskRoute,
+  CompaniesCompanyIdRoute: CompaniesCompanyIdRoute,
   NeedsNeedIdRoute: NeedsNeedIdRoute,
   CompaniesIndexRoute: CompaniesIndexRoute,
   NeedsIndexRoute: NeedsIndexRoute,
