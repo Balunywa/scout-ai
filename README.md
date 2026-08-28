@@ -1,1183 +1,631 @@
-# Scout AI
+# Digital Scout — Azure AI Technology Discovery Accelerator
 
-Build a production-quality enterprise web application called Digital Scout for Contoso.
+Digital Scout is an Azure-native accelerator for organizations that need to discover, evaluate, and operationalize new technologies faster.
 
-Product Goal
+It turns fragmented technology-scouting workflows — forms, spreadsheets, email threads, SharePoint sites, vendor notes, test reports, and individual expertise — into a searchable, AI-assisted decision system.
 
-Digital Scout modernizes Contoso’s Technology Scout process into an AI-driven engineering discovery platform.
+Instead of asking people to know where information lives or who evaluated a technology three years ago, Digital Scout lets them start with a business or engineering problem:
 
-Today, Contoso Technology Scouts receive technology needs from Product Service Lines (PSLs), manually research companies and technologies, collect feedback through email/files, and return recommendations.
+> **"Tell Digital Scout what you are trying to solve."**
 
-The existing process relies heavily on Power Apps/Appian, SharePoint, manual forms, manual research, and knowledge held by individual scouts.
+The platform then helps define the need, finds relevant internal knowledge, identifies prior evaluations, surfaces potential companies or technologies, captures expert feedback, and maintains traceability through evaluation, pilot, project, and outcome.
 
-The new experience should make technology scouting part of everyday engineering work and be usable by approximately 2,000 Contoso engineers and technologists, not just the Scout organization.
+---
 
-This should NOT look like a generic CRM, SharePoint replacement, or traditional form application.
+## Why this exists
 
-The primary experience should feel like:
+Large organizations often have no shortage of technical expertise. The problem is that the expertise is distributed across people, documents, inboxes, business units, and disconnected systems.
 
-“Tell Digital Scout what problem you are trying to solve, and let AI help you find what Contoso already knows, what exists externally, and what should happen next.”
+That creates a predictable set of problems:
 
-Core Design Principles
+- Teams repeat research that another group has already completed.
+- Technology requests become stale because there is no active follow-up loop.
+- Vendor and technology evaluations are difficult to find and reuse.
+- Engineer feedback remains trapped in email, documents, and personal folders.
+- Business units cannot easily see what has already been tested, rejected, funded, or deployed.
+- Innovation and R&D teams spend too much time administering intake and too little time evaluating solutions.
+- Leadership lacks traceability from an initial technology need to an actual funded project or business outcome.
 
-AI first, forms second
+Digital Scout addresses that gap by making organizational technology knowledge conversational, searchable, reusable, and actionable.
 
-Prefer conversational intake over long forms.
+---
 
-AI should extract structured information from natural-language conversations.
+## Business Value
 
-Users should always be able to review/edit what AI extracted.
+Digital Scout is designed to improve the economics and speed of technology discovery — not simply digitize an existing form.
 
-Knowledge reuse
+### 1. Reduce duplicate research
 
-Before creating a new technology need, surface related existing needs, evaluations, companies, projects, and reports.
+Before a new technology request is created, Digital Scout searches prior needs, company evaluations, projects, test reports, engineering feedback, and related documents.
 
-Prevent engineers from repeating work Contoso has already performed.
+**Business impact:**
 
-Traceability
-Everything should connect across the lifecycle:
-Technology Need → Company → Evaluation → Project → Test Report
+- Avoid repeating work that has already been funded or completed.
+- Reuse previous technical evaluations across teams and business units.
+- Reduce time spent searching SharePoint, email, spreadsheets, and disconnected repositories.
+- Preserve institutional knowledge when employees or subject-matter experts move roles.
 
-Engineering-first
-This is used for much more than IT.
-Example categories include:
+### 2. Shorten the path from problem to qualified options
 
-Chemicals
+Engineers can describe a problem in natural language instead of completing a long intake form. AI helps extract the technical requirements, asks clarification questions, identifies gaps, and returns relevant internal knowledge and potential solutions.
 
-Materials and coatings
+**Business impact:**
 
-Sensors
+- Faster intake and qualification of new technology needs.
+- Less manual administration for innovation, scouting, and R&D teams.
+- More consistent requirements before vendor engagement begins.
+- Faster movement from an idea to a shortlist of technologies worth evaluating.
 
-Electronics
+### 3. Scale specialist knowledge across the organization
 
-Water treatment
+A small scouting, engineering, or innovation team can support a much larger population of engineers through a self-service AI experience.
 
-Power systems
+Digital Scout does not replace the specialist. It helps specialists spend their time on high-value evaluation and decision-making rather than repeatedly answering basic discovery questions.
 
-AI/ML
+**Business impact:**
 
-Automation
+- Extend access to technology knowledge beyond a small central team.
+- Allow engineers to self-serve common discovery questions.
+- Reduce dependency on knowing the "right person" inside the organization.
+- Give domain experts a reusable way to capture what they learn.
 
-Engineering technologies
+### 4. Improve technology investment decisions
 
-Scientific technologies
+Digital Scout connects the full lifecycle:
 
-Azure-native architecture
-The application and all backend services should be designed to run on Microsoft Azure.
+**Need → Candidate Technology / Company → Evaluation → Pilot / Project → Test Report → Outcome**
 
-Azure Architecture
+That gives teams a clear history of why a technology was considered, what was learned, who evaluated it, what risks were identified, and what ultimately happened.
 
-Design the application assuming this backend architecture.
+**Business impact:**
 
-Identity
+- Better evidence before funding pilots or development work.
+- Clearer technical and commercial decision history.
+- Reduced risk of reconsidering previously rejected solutions without understanding why they failed.
+- Better visibility into which scouting activities actually resulted in pilots, projects, products, savings, or revenue.
 
-Use:
+### 5. Keep technology needs alive and current
 
-Microsoft Entra ID
+Digital Scout can identify stale needs and recommend an action based on new information.
 
-Contoso corporate identities
+For example:
 
-Role-based access control
+- A requirement has had no activity for 120 days.
+- New companies have entered the market.
+- Another business unit recently evaluated a similar technology.
+- A new test report changes the previous recommendation.
 
-Roles:
+**Business impact:**
 
-Engineer / Technologist
+- Reduce abandoned or forgotten requests.
+- Revalidate needs against current market conditions.
+- Close or merge duplicate requests instead of accumulating backlog.
+- Focus scouts and engineers on the needs most likely to create business value.
 
-Technology Scout
+---
 
-PSL Leader
+## Where Customers Can Use It
 
-Evaluator / Subject Matter Expert
+Digital Scout is intentionally broader than IT. Any organization that evaluates external technology, vendors, engineering solutions, or emerging capabilities can use the pattern.
 
-Administrator
+Typical deployment scenarios include:
 
-AI
+| Business Area | Example Use |
+| --- | --- |
+| Engineering & R&D | Find technologies that meet a new technical requirement and reuse previous engineering evaluations. |
+| Innovation / Technology Scouting | Manage technology needs, company discovery, evaluations, pilots, and recommendations. |
+| Energy & Natural Resources | Scout sensors, materials, coatings, water technologies, automation, power systems, AI, and field technologies. |
+| Manufacturing | Evaluate robotics, industrial automation, inspection, materials, predictive maintenance, and plant technologies. |
+| Utilities | Discover grid, storage, inspection, vegetation management, field-service, and reliability technologies. |
+| Chemicals & Materials | Track new formulations, coatings, catalysts, membranes, and specialty materials. |
+| Supply Chain / Procurement | Reuse technical vendor evaluations before starting a new sourcing exercise. |
+| Enterprise Architecture | Search prior platform evaluations and understand why technologies were selected or rejected. |
+| Corporate Venture / Open Innovation | Connect external companies to internal problems and track what progresses into pilots or investment. |
+| AI / Automation Programs | Match business problems to AI capabilities, existing internal work, vendors, and reusable solutions. |
 
-Use Azure AI Foundry as the AI platform.
+The same accelerator can be adapted to other industries by changing the data model, terminology, evaluation criteria, and example workflows.
 
-Digital Scout should use AI agents for:
+---
 
-Conversational technology-need intake
+## What the Customer Gets
 
-Requirement extraction
+The accelerator is intended to be a deployable starting point, not a slide-only reference architecture.
 
-Technology classification
+A customer deployment can include:
 
-Duplicate/similar need detection
+- A working web application deployed into the customer's Azure environment.
+- Microsoft Entra ID authentication and role-based access.
+- Conversational technology-need intake.
+- AI-assisted requirement extraction and classification.
+- Semantic search across structured and unstructured organizational knowledge.
+- Similarity and duplicate-need detection.
+- Company / technology recommendation workflow.
+- Evaluation workspace for engineering and subject-matter experts.
+- AI summaries of evaluations, feedback, and reports.
+- Technology lifecycle traceability.
+- Follow / notification workflows.
+- APIs and service abstractions that can be connected to the customer's existing systems.
+- Infrastructure-as-code / deployment artifacts for repeatable deployment.
+- A clear Azure cost model based on the customer's selected scale and services.
 
-Knowledge retrieval
+The accelerator should be treated as an MVP foundation that can be extended around the customer's workflow, data, security model, and operating process.
 
-Company/vendor matching
+---
 
-Evaluation summarization
+## Example Customer Journey
 
-Engineer feedback summarization
+An engineer has a new requirement:
 
-Research assistance
+> **"I need a coating for equipment operating in an H₂S environment above 180°C."**
 
-Recommendation generation
+Instead of opening a request form and starting research from zero, the engineer asks Digital Scout.
 
-Follow-up question generation
+Digital Scout can:
 
-Test report summarization
+1. Understand the engineering problem.
+2. Ask clarification questions about temperature, pressure, materials, environment, lifecycle, and constraints.
+3. Extract a structured technology need from the conversation.
+4. Search the organization's previous technology work.
+5. Find similar needs submitted by other teams.
+6. Surface companies and technologies evaluated previously.
+7. Retrieve relevant test reports, engineering feedback, project documents, and decisions.
+8. Identify what is already known versus what is still unknown.
+9. Recommend candidate companies or technologies worth investigating.
+10. Create the new technology need with the relevant context already attached.
+11. Route the need to the appropriate technology, engineering, innovation, or evaluation team.
+12. Maintain traceability as the technology moves through evaluation, pilot, project, and final outcome.
 
-Architect the UX as if multiple specialized AI agents may eventually exist behind the application.
+The value is not simply that AI answered a question. The value is that the organization started from everything it already knew instead of starting from zero.
 
-Example agents:
+---
 
-Need Definition Agent
-Helps an engineer turn an initial idea/problem into a well-defined technology need.
+## Core User Experiences
 
-Knowledge Agent
-Searches Contoso’s existing technology scouting knowledge.
+### Ask Digital Scout
 
-Company Discovery Agent
-Identifies potentially relevant companies and technologies.
+The primary experience is conversational.
 
-Evaluation Agent
-Summarizes evaluations and compares alternatives.
+Users can ask questions such as:
 
-Scout Agent
-Acts as the main orchestration agent across the scouting lifecycle.
+- "Have we evaluated this technology before?"
+- "Who inside the company has worked on this problem?"
+- "Find companies that meet these technical requirements."
+- "Show me previous test reports related to this technology."
+- "What are the major risks in the companies we are evaluating?"
+- "Do we already have a technology need similar to this one?"
+- "What changed since this technology was evaluated two years ago?"
 
-Enterprise Search / RAG
+The system returns answers with references to the underlying organizational sources wherever possible.
 
-Use:
+### Conversational Need Definition
 
-Azure AI Search
+Instead of forcing an engineer through a large form, Digital Scout guides the user through the problem.
 
-The search/indexing layer should support information from:
+AI can extract:
 
-Existing technology needs
+- Problem statement
+- Business objective
+- Technology domain
+- Technical requirements
+- Operating environment
+- Constraints
+- Desired outcome
+- Timeline
+- Business impact
+- Existing approaches
+- Technology readiness expectation
+- Keywords
 
-Company profiles
+The user reviews and edits the extracted information before creating the formal need.
 
-Technology evaluations
+### Organizational Knowledge Search
 
-Engineer feedback
+Digital Scout provides semantic search across the organization's technology knowledge.
 
-SharePoint documents
+Search can include:
 
-Test reports
+- Technology needs
+- Company profiles
+- Vendor evaluations
+- Engineer feedback
+- SharePoint content
+- Test reports
+- Project documents
+- Scout / innovation notes
+- Technical reports
+- Prior recommendations
 
-Project documents
+Results can be grouped by source type and summarized by AI with citations.
 
-Scout notes
+### Company and Technology Matching
 
-The UX should clearly distinguish between:
+Digital Scout can rank candidate companies or technologies against a defined need.
 
-Contoso internal knowledge
+A recommendation can show:
 
-and
+- Match score
+- Requirements matched
+- Requirements not demonstrated
+- Technology maturity
+- Prior company interactions
+- Existing evaluations
+- Test results
+- Known risks
+- Why the recommendation was generated
 
-Externally discovered information
+AI recommendations should remain transparent and traceable to evidence.
 
-AI answers should show source references wherever possible.
+### Evaluation Workspace
 
-Data
+Subject-matter experts can evaluate a technology without working through a giant static form.
 
-Use Azure-native backend services.
+Evaluation dimensions can include:
 
-Recommended architecture:
+- Technology fit
+- Technical maturity
+- Commercial maturity
+- Integration complexity
+- Scalability
+- Differentiation
+- Strategic relevance
+- Risk
+- Testing requirements
+- Recommendation
 
-Azure Database for PostgreSQL for structured application data
+Users can add comments, upload documents, record test results, attach supporting material, and capture decisions.
 
-Azure Blob Storage / ADLS for documents and reports
+AI continuously summarizes the evidence and can generate an emerging recommendation for review by the evaluation team.
 
-Azure AI Search for semantic/vector search
+### Technology Journey / Traceability
 
-Azure Functions or Azure Container Apps for backend APIs and agent orchestration
+Every technology can maintain a visible lifecycle:
 
-Azure Service Bus / Event Grid for asynchronous workflows and notifications
-
-Azure Key Vault for secrets
-
-Azure Monitor / Application Insights for observability
-
-Design API/service abstractions so the UI is not tightly coupled to mock data.
-
-Microsoft 365 Integration
-
-Design for future integration with:
-
-Microsoft Teams
-
-Microsoft Copilot
-
-SharePoint
-
-Microsoft Graph
-
-Outlook notifications
-
-Digital Scout should eventually be accessible from both the web application and Teams/Copilot.
-
-Main Application Experience
-
-Create a desktop-first responsive enterprise application.
-
-Do NOT build a marketing landing page.
-
-After authentication, immediately take the user into the Digital Scout workspace.
-
-Use a modern Microsoft enterprise aesthetic:
-
-clean
-
-highly polished
-
-information dense without feeling crowded
-
-subtle Contoso red accents
-
-neutral backgrounds
-
-excellent typography
-
-cards only where useful
-
-avoid excessive gradients
-
-avoid giant hero banners
-
-avoid generic startup/SaaS styling
-
-Use a persistent left navigation.
-
-Navigation:
-
-Home
-
-Ask Digital Scout
-
-Technology Needs
-
-Companies
-
-Evaluations
-
-Projects
-
-Knowledge
-
-Following
-
-Scout Workspace
-
-Admin
-
-At the top include global semantic search:
-
-“Search needs, companies, evaluations, projects, reports…”
-
-Also provide a prominent:
-
-Ask Digital Scout
-
-button.
-
-1. Home / My Scout Dashboard
-
-Build a personalized dashboard.
-
-Greeting:
-
-Good morning, Sarah
-
-Subheading:
-
-What technology problem are you trying to solve?
-
-Immediately show an AI input box:
-
-Describe a technology challenge, search for something Contoso has evaluated, or ask Digital Scout a question…
-
-Suggested examples:
-
-“We need a coating that can survive high-temperature H₂S environments.”
-
-“Has Contoso evaluated alternatives to lithium batteries for downhole sensors?”
-
-“Find companies working on produced-water treatment.”
-
-“What technologies have we evaluated for methane detection?”
-
-“Show me technologies related to autonomous wellsite operations.”
-
-Underneath, show sections:
-
-Needs requiring attention
-
-Technology needs owned/followed by the user.
-
-Show:
-
-title
-
-PSL
-
-category
-
-owner
-
-status
-
-last activity
-
-age
-
-recommended next action
-
-Clearly flag stale items.
-
-Example:
-
-High Temperature Corrosion Resistant Coating
-
-Drilling & Evaluation
-Materials & Coatings
-
-Last meaningful activity: 147 days ago
-
-AI badge:
-
-Potentially stale
-
-Action:
-
-Review with Digital Scout
-
-Recommended for you
-
-AI-generated technologies, companies, evaluations, or needs based on:
-
-user PSL
-
-expertise
-
-followed topics
-
-recent activity
-
-Knowledge resurfaced
-
-Show older Contoso work that may be useful now.
-
-Example:
-
-Contoso evaluated 4 companies addressing similar requirements in 2023.
-
-Button:
-
-View previous evaluations
-
-This section is important because knowledge reuse is one of the primary product outcomes.
-
-Activity
-
-Recent events:
-
-Company evaluation completed
-
-Engineer added feedback
-
-New company matched to followed need
-
-Test report uploaded
-
-Technology need changed status
-
-New external development detected
-
-2. Ask Digital Scout
-
-This is one of the main experiences.
-
-Create a full conversational AI interface similar to a high-end enterprise Copilot.
-
-Left side:
-conversation history.
-
-Main area:
-AI conversation.
-
-Right contextual panel:
-dynamic context associated with the conversation.
-
-Example user:
-
-We are looking for a new sensor technology capable of operating above 200°C downhole.
-
-Digital Scout responds conversationally:
-
-I found 7 related technology needs and 12 previous company evaluations. Before creating another request, let’s determine whether any of those already address this problem.
-
-Show inline cards for:
-
-related needs
-
-evaluated companies
-
-prior projects
-
-test reports
-
-Then AI asks:
-
-What pressure range does the sensor need to support?
-
-As conversation progresses, show a live Technology Need Draft in the right panel.
-
-Extract:
-
-Problem statement
-
-PSL
-
-Technology category
-
-Technical requirements
-
-Operating environment
-
-Constraints
-
-Desired outcome
-
-Timeline
-
-Business impact
-
-Existing approaches
-
-Technology readiness expectation
-
-Keywords
-
-Allow user to edit AI-extracted fields.
-
-At completion show:
-
-Digital Scout has enough information to create this Technology Need.
-
-Buttons:
-
-Create Technology Need
-
-Continue Refining
-
-3. Technology Needs
-
-Create a rich searchable list/table.
-
-Filters:
-
-PSL
-
-Technology category
-
-Status
-
-Scout
-
-Owner
-
-Created date
-
-Last activity
-
-Technology readiness
-
-Strategic priority
-
-Followed by me
-
-Potentially stale
-
-Statuses:
-
-Draft
-
-Scouting
-
-Companies Identified
-
-Evaluation
-
-Pilot / Test
-
-Project
-
-Closed
-
-Archived
-
-Each item should show:
-
-Technology Need
-PSL
-Category
-Scout
-Created
-Last Activity
-Status
-Matched Companies
-Evaluations
-Followers
-
-Add AI signals such as:
-
-Similar need exists
-
-No activity in 180 days
-
-3 newly discovered companies
-
-Previous Contoso evaluation available
-
-4. Technology Need Detail
-
-Create a detailed workspace.
-
-Header:
-
-Technology Need title
-
-Example:
-
-High Temperature Downhole Pressure Sensor
-
-Include:
-
-Status
-PSL
-Owner
-Technology Scout
-Followers
-Created date
-Last updated
-
-Buttons:
-
-Ask Digital Scout
-
-Follow
-
-Add Evaluation
-
-Share in Teams
-
-Create tabs:
-
-Overview
-
-Show:
-
-Problem Statement
-
-Technical Requirements
-
-Business Need
-
-Operating Environment
-
-Constraints
-
-Desired Outcome
-
-Technology Readiness
-
-AI-generated summary.
-
-AI Recommendations
-
-Show:
-
-Best Fit Companies
-
-Rank companies using AI matching.
-
-For each company show:
-
-Company name
-
-Technology
-
-Match score
-
-Why it matches
-
-Requirement coverage
-
-Prior Contoso interaction
-
-Existing evaluations
-
-Risks / gaps
-
-Example:
-
-Novosense Technologies
-
-92% Match
-
-Reasons:
-
-Operating temperature >225°C
-
-Downhole-qualified sensor platform
-
-Existing Contoso evaluation from 2024
-
-Button:
-
-Why this recommendation?
-
-Related Contoso Knowledge
-
-Show:
-
-Related technology needs
-Previous evaluations
-Projects
-Test reports
-Engineer feedback
-Documents
-
-Use semantic similarity.
-
-Companies
-
-All companies being considered for this need.
-
-Evaluations
-
-Evaluation history.
-
-Activity
-
-Timeline of all lifecycle events.
-
-Documents
-
-Reports and associated SharePoint/Azure documents.
-
-5. Companies
-
-Build an enterprise company/technology intelligence catalog.
-
-There are approximately 500–600 evaluated companies initially.
-
-Search:
-
-Search companies, capabilities, technologies, or problems they solve…
-
-Filters:
-
-Technology domain
-Evaluation status
-PSL
-Country
-Technology readiness
-Prior Contoso engagement
-
-Cards/table should show:
-
-Company
-Technology areas
-Contoso evaluations
-Related needs
-Current status
-Last evaluated
-
-6. Company Detail
-
-Example:
-
-Acme Advanced Materials
-
-Show:
-
-Company description
-
-Technology areas
-
-Website
-
-Headquarters
-
-Technology maturity
-
-Contoso relationship
-
-Last evaluated
-
-AI-generated summary:
-
-Why this company matters to Contoso
-
-Tabs:
-
-Overview
-
-Technology
-
-Related Needs
-
-Evaluations
-
-Projects
-
-Documents
-
-Activity
-
-Include:
-
-Contoso Experience
-
-Show previous feedback from multiple engineers.
-
-AI should summarize distributed feedback.
-
-Example:
-
-Digital Scout summary
-
-Across four Contoso evaluations, engineers consistently rated the material performance highly but identified scale manufacturing and lead time as risks.
-
-Then provide source links.
-
-7. Evaluation Workspace
-
-Create a structured evaluation experience.
-
-Do NOT make it feel like a giant form.
-
-Use sections with AI-assisted completion.
-
-Evaluation criteria could include:
-
-Technology fit
-
-Technical maturity
-
-Commercial maturity
-
-Integration complexity
-
-Scalability
-
-Differentiation
-
-Strategic relevance
-
-Risks
-
-Testing requirements
-
-Allow engineers to:
-
-enter comments
-
-upload documents
-
-add test results
-
-attach emails/notes
-
-record recommendations
-
-AI continuously summarizes the evaluation.
-
-Show:
-
-Emerging Recommendation
-
-Example:
-
-Proceed to controlled field test
-
-Confidence: High
-
-Reasons:
-
-Meets 8/9 technical requirements
-
-Technology previously validated at lab scale
-
-Main remaining risk is field durability
-
-8. Traceability / Technology Journey
-
-Create a visual lineage experience.
-
-For any technology, show:
-
-Technology Need
-↓
-Candidate Companies
-↓
-Evaluation
-↓
-Project
-↓
-Test Report
-↓
-Outcome
-
-Use an elegant timeline / relationship graph.
-
-Users should be able to understand:
-
-“What happened to this technology after scouting?”
-
-Example:
-
-High Temperature Sensor Need
-
-→ Sensatek identified
-
-→ Technical evaluation completed
-
-→ Field test funded
-
-→ Permian pilot executed
-
-→ Test report uploaded
-
-→ Technology approved for product integration
-
-This traceability is a major feature.
-
-9. Knowledge Search
-
-Create a dedicated semantic knowledge explorer.
-
-Search prompt:
-
-Search everything Contoso knows about a technology…
-
-Example query:
-
-Produced water membrane technologies
-
-Results should organize automatically into:
-
-Technology Needs
-
-Companies
-
-Evaluations
-
-Projects
-
-Test Reports
-
-Documents
-
-People / Experts
-
-AI Summary
-
-At the top display:
-
-Digital Scout Summary
-
-with citations to internal sources.
-
-10. Following / Notifications
-
-Users should be able to follow:
-
-Technology needs
-
-Companies
-
-Technologies
-
-Keywords/topics
-
-Projects
-
-Example notifications:
-
-A new company matching your hydrogen embrittlement technology need was identified.
-
-A Technology Need you follow has not received activity in 120 days.
-
-A new test report was added to a company you follow.
-
-Three Contoso engineers evaluated a technology related to autonomous drilling this month.
-
-11. Scout Workspace
-
-Technology Scouts need a more advanced operational view.
-
-Dashboard cards:
-
-Strategic Needs
-Needs without Scout activity
-New submissions
-Needs awaiting evaluation
-Companies requiring review
-Evaluations awaiting feedback
-Recently discovered companies
-Potential duplicate needs
-
-Show analytics:
-
-120 Strategic Technology Needs
-
-563 Evaluated Companies
-
-38 Active Scout Engagements
-
-17 Evaluations in Progress
-
-9 Technologies in Pilot
-
-4 Technologies Converted to Projects
-
-Do not over-focus on analytics. The main objective is helping scouts take action.
-
-12. Stale Technology Need Detection
-
-Build an AI workflow specifically for stale needs.
-
-Example:
-
-Digital Scout Review
-
-This technology need was created 14 months ago and has had no significant activity for 167 days.
-
-Digital Scout suggests:
-
-Requirement may still be valid
-
-3 new companies have entered this technology area
-
-Similar technology was recently evaluated by another PSL
-
-Actions:
-
-Refresh Need
-
-Ask Owner
-
-Merge With Existing Need
-
-Close
-
-13. Create Need
-
-Provide TWO options.
-
-Option 1 — Talk to Digital Scout
-
-Primary/default.
-
-Conversational intake.
-
-Option 2 — Manual Entry
-
-Secondary.
-
-Keep manual entry available for experienced scouts.
-
-14. AI Transparency
-
-Every AI-generated recommendation should have:
-
-Why am I seeing this?
-
-Allow users to inspect:
-
-matched requirements
-
-knowledge sources
-
-previous evaluations
-
-similarity signals
-
-confidence
-
-Do not make the AI appear magical or opaque.
-
-15. Demo Data
-
-Populate the prototype with realistic Oil & Gas / engineering examples.
-
-Include technology needs such as:
-
-High-temperature downhole sensors
-
-Hydrogen resistant pipeline coatings
-
-Produced water treatment
-
-Methane leak detection
-
-Autonomous wellsite inspection
-
-High density energy storage
-
-Subsea power systems
-
-Carbon capture materials
-
-Drilling automation
-
-Advanced cement additives
-
-Create approximately:
-
-15 Technology Needs
-
-25 Companies
-
-20 Evaluations
-
-8 Projects
-
-10 Test Reports
-
-realistic activity
-
-users from multiple Product Service Lines
-
-Do NOT use lorem ipsum.
-
-16. Architecture Awareness in the UI
-
-Create the application so backend adapters/services can later connect to Azure.
-
-Organize the frontend service layer around APIs such as:
-
-/api/needs
-
-/api/companies
-
-/api/evaluations
-
-/api/projects
-
-/api/reports
-
-/api/search
-
-/api/agents/scout
-
-/api/agents/need-definition
-
-/api/recommendations
-
-/api/notifications
-
-Do not hardcode Azure credentials, endpoints, subscription IDs, or secrets.
-
-Use environment variables.
-
-For the initial prototype, mock responses behind a clean API abstraction so they can later be replaced with Azure services.
-
-17. Future AI Agent Architecture
-
-Design the application assuming Azure AI Foundry will orchestrate the intelligence layer.
-
-Conceptual flow:
-
-User / Teams / Copilot
-
-↓
-
-Digital Scout Web Experience
-
-↓
-
-Azure-hosted API Layer
-
-↓
-
-Digital Scout Orchestrator Agent
-
-↓
-
-Specialized Agents
-
-Need Definition Agent
-
-Contoso Knowledge Agent
-
-Company Research Agent
-
-Evaluation Agent
-
-Recommendation Agent
-
-↓
-
-Azure AI Search + Contoso Data
-
-↓
-
-PostgreSQL / SharePoint / Blob Storage / Project & Test Data
-
-The application should visually reinforce this concept through the experience without exposing unnecessary infrastructure details to normal users.
-
-Most Important User Story
-
-The strongest demo flow should be:
-
-An engineer logs in and types:
-
-“I need a coating for a downhole tool operating in an H₂S environment above 180°C.”
-
-Digital Scout:
-
-Understands the request.
-
-Asks several intelligent clarification questions.
-
-Extracts the technical requirements.
-
-Searches Contoso's previous technology work.
-
-Finds similar technology needs.
-
-Shows previously evaluated companies.
-
-Shows relevant test reports.
-
-Identifies gaps between the new requirement and previous work.
-
-Suggests external companies/technologies worth investigating.
-
-Creates a structured Technology Need.
-
-Allows the engineer to follow the need.
-
-Routes it into the Technology Scout workflow.
-
-Maintains complete traceability as the technology progresses through evaluation, testing, project funding, and potential product adoption.
-
-Build this flow first and make it exceptional.
-
-Product Message
-
-The product should communicate one simple idea throughout the experience:
-
-Contoso should never have to rediscover what Contoso already knows.
-
-Digital Scout captures engineering knowledge, combines it with external technology intelligence, and uses AI to help engineers move from a technology problem to an in
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
 ```
+Need
+  ↓
+Candidate Companies / Technologies
+  ↓
+Evaluation
+  ↓
+Pilot / Project
+  ↓
+Test Report
+  ↓
+Business Outcome
+```
+
+This lets customers answer questions such as:
+
+- What happened after this technology was identified?
+- Why was this company rejected?
+- Which evaluations became funded pilots?
+- Which pilots became production capabilities?
+- What did we learn from the test?
+- Who owns the next action?
+
+---
+
+## Azure-Native Architecture
+
+Digital Scout is designed to run on Microsoft Azure and integrate with the customer's existing Microsoft data and collaboration estate.
+
+```
+Users / Engineers / Scouts / SMEs
+             |
+             v
+Web App / Teams / Microsoft 365 Experience
+             |
+             v
+Azure-hosted Application & API Layer
+             |
+             v
+AI Orchestration Layer
+Azure AI Foundry
+             |
+     +-------+---------+----------+-----------+
+     |                 |          |           |
+     v                 v          v           v
+Need Definition   Knowledge   Research /   Evaluation
+Agent             Agent       Matching     Agent
+                              Agent
+     |                 |          |           |
+     +-----------------+----------+-----------+
+                       |
+                       v
+                  Azure AI Search
+                       |
+       +---------------+----------------+
+       |               |                |
+       v               v                v
+Azure Database    Blob / ADLS      Microsoft 365 /
+for PostgreSQL    Documents        SharePoint / Graph
+```
+
+---
+
+## Azure Services
+
+The accelerator is designed around Azure services that can be replaced or extended based on customer standards.
+
+| Capability | Azure Service |
+| --- | --- |
+| Identity and authentication | Microsoft Entra ID |
+| AI models and agent orchestration | Azure AI Foundry |
+| Semantic / vector search and RAG | Azure AI Search |
+| Structured application data | Azure Database for PostgreSQL |
+| Documents and reports | Azure Blob Storage / Azure Data Lake Storage |
+| APIs / application backend | Azure Container Apps and/or Azure Functions |
+| Asynchronous workflows | Azure Service Bus / Event Grid |
+| Secrets and keys | Azure Key Vault |
+| Monitoring and telemetry | Azure Monitor / Application Insights |
+| Collaboration and enterprise content | Microsoft Graph / SharePoint / Teams |
+
+The design should avoid hardcoded credentials, subscription IDs, or environment-specific endpoints. Configuration should be externalized and deployable per customer environment.
+
+---
+
+## AI Agent Pattern
+
+Digital Scout can be implemented as one orchestrating experience backed by specialized agents.
+
+### Scout Orchestrator
+
+Coordinates the user request and determines which specialized capability is required.
+
+### Need Definition Agent
+
+Turns an initial problem statement into a structured technology need through guided clarification.
+
+### Knowledge Agent
+
+Retrieves relevant internal needs, reports, evaluations, projects, documents, and expert knowledge.
+
+### Company / Technology Research Agent
+
+Finds candidate companies or technologies and compares their capabilities to the stated requirement.
+
+### Evaluation Agent
+
+Summarizes expert feedback, compares alternatives, identifies gaps, and assists with recommendations.
+
+### Recommendation Agent
+
+Uses the collected evidence to suggest the next action while exposing the reasoning inputs and source material.
+
+---
+
+## AI Trust and Transparency
+
+Enterprise users need to understand why an AI recommendation exists.
+
+Every material recommendation should support a **"Why am I seeing this?"** experience showing:
+
+- Requirements matched
+- Requirements not matched
+- Internal knowledge sources
+- Previous evaluations
+- Similarity signals
+- Test results
+- Confidence / strength of evidence
+- Source references
+
+The goal is decision support, not an opaque autonomous decision maker.
+
+---
+
+## Data Sources Customers Can Connect
+
+Digital Scout can be connected to existing repositories rather than requiring the customer to move everything into a new system on day one.
+
+Potential sources include:
+
+- SharePoint document libraries
+- Existing innovation / scouting databases
+- Power Apps or Appian data
+- SQL databases
+- PostgreSQL databases
+- Excel / CSV exports
+- Test-report repositories
+- Engineering document systems
+- Vendor databases
+- Project repositories
+- Microsoft Teams / Microsoft 365 content, subject to governance and permissions
+- External technology or company data sources approved by the customer
+
+A phased deployment can begin with a small number of high-value sources and expand over time.
+
+---
+
+## Recommended Deployment Pattern
+
+### Phase 1 — Rapid Prototype
+
+Use one high-value technology domain or business unit.
+
+Connect a representative set of existing needs, evaluations, companies, and reports.
+
+Demonstrate the end-to-end flow:
+
+**Ask → Define → Search → Reuse → Recommend → Evaluate → Trace**
+
+The objective is to validate whether users can reach a better answer faster using the organization's existing knowledge.
+
+### Phase 2 — Production MVP
+
+Add:
+
+- Entra ID and production RBAC
+- Customer data sources
+- Production Azure AI Search indexes
+- Azure AI Foundry models / agents
+- Monitoring and security controls
+- Workflow ownership
+- Notifications
+- Audit / traceability
+- Infrastructure-as-code
+
+### Phase 3 — Scale Across the Enterprise
+
+Expand:
+
+- Additional business units and technology domains
+- Teams / Microsoft 365 integration
+- Additional knowledge sources
+- Automated external research feeds
+- Portfolio analytics
+- Technology-to-project outcome tracking
+- Business-value measurement
+
+---
+
+## Measuring Success
+
+Customers should define success around workflow and business outcomes, not AI usage alone.
+
+Useful measures include:
+
+- Time from initial problem statement to qualified technology need
+- Time from technology need to first relevant recommendation
+- Percentage of new requests where prior internal work is reused
+- Duplicate requests avoided or merged
+- Number of previous evaluations resurfaced and reused
+- Reduction in manual intake effort
+- Number of users able to self-serve technology discovery
+- Time from need to evaluation
+- Time from evaluation to pilot decision
+- Percentage of evaluated technologies progressing to pilot or project
+- Percentage of pilots progressing to production / product use
+- Value, savings, revenue, risk reduction, or operational impact attributable to adopted technologies
+
+The accelerator should make it possible to connect technology-scouting activity to an actual business outcome.
+
+---
+
+## Cost Model
+
+Azure consumption depends on customer scale, traffic, model selection, document volume, search index size, and the amount of AI processing performed.
+
+The primary cost drivers are typically:
+
+- Azure AI Foundry model/token usage
+- Azure AI Search tier and index size
+- Application/API compute
+- Azure Database for PostgreSQL compute and storage
+- Blob / ADLS document storage
+- Logging and monitoring volume
+
+For a customer engagement, the recommended approach is to deploy the MVP into the customer's Azure environment, run representative usage, and provide a measured monthly Azure run-rate rather than relying only on theoretical estimates.
+
+---
+
+## Security and Enterprise Controls
+
+The accelerator should be deployed using the customer's Azure security standards.
+
+Recommended controls include:
+
+- Microsoft Entra ID authentication
+- Role-based access control
+- Managed identities where supported
+- Azure Key Vault for secrets
+- Private networking / private endpoints where required
+- Data-source permissions respected during retrieval
+- Separation of internal and external information
+- Source citations for AI-generated answers
+- Application and AI telemetry through Azure Monitor / Application Insights
+- Customer-owned Azure resources and data
+- Auditability for evaluations and recommendations
+
+---
+
+## Example Technology Domains
+
+The platform can support technology discovery across domains such as:
+
+- Chemicals
+- Materials and coatings
+- Sensors
+- Electronics
+- Water treatment
+- Power systems
+- Energy storage
+- Robotics
+- Industrial automation
+- AI / ML
+- Computer vision
+- Inspection technologies
+- Carbon management
+- Reliability technologies
+- Advanced manufacturing
+- Engineering software
+- Scientific technologies
+
+These are examples, not hardcoded categories.
+
+---
+
+## Example Demo Data
+
+A demonstration environment can include realistic technology needs such as:
+
+- High-temperature sensing
+- Corrosion-resistant coatings
+- Produced-water treatment
+- Methane leak detection
+- Autonomous inspection
+- High-density energy storage
+- Subsea / remote power systems
+- Carbon-capture materials
+- Industrial automation
+- Advanced material additives
+
+Demo data should be synthetic and should not contain customer confidential information.
+
+---
+
+## API Surface
+
+The frontend should communicate through clean service abstractions so prototype data can later be replaced with production Azure services.
+
+Example API surface:
+
+```
+/api/needs
+/api/companies
+/api/evaluations
+/api/projects
+/api/reports
+/api/search
+/api/agents/scout
+/api/agents/need-definition
+/api/recommendations
+/api/notifications
+```
+
+No Azure credentials, keys, subscription IDs, or customer-specific endpoints should be hardcoded into the application.
+
+---
+
+## What This Accelerator Is Not
+
+Digital Scout is not intended to be:
+
+- Another generic CRM
+- A replacement for every enterprise content repository
+- A large manual intake form with an AI button added to it
+- An autonomous system making engineering investment decisions without human review
+- A demo that only works with hardcoded data
+
+It is a reusable Azure-based starting point for turning technology discovery and evaluation into a searchable, AI-assisted, traceable business process.
+
+---
+
+## The Core Idea
+
+> **Your organization should not have to rediscover what it already knows.**
+
+Digital Scout brings internal knowledge, external technology intelligence, AI-assisted discovery, expert evaluation, and lifecycle traceability into one workflow.
+
+The objective is simple:
+
+**Move from a technology problem to an informed business decision faster — using the knowledge the organization already paid to create.**
