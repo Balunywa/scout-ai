@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AskRouteImport } from './routes/ask'
 import { Route as NeedsIndexRouteImport } from './routes/needs.index'
+import { Route as NeedsNeedIdRouteImport } from './routes/needs.$needId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,34 +29,43 @@ const NeedsIndexRoute = NeedsIndexRouteImport.update({
   path: '/needs/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NeedsNeedIdRoute = NeedsNeedIdRouteImport.update({
+  id: '/needs/$needId',
+  path: '/needs/$needId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
+  '/needs/$needId': typeof NeedsNeedIdRoute
   '/needs/': typeof NeedsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
+  '/needs/$needId': typeof NeedsNeedIdRoute
   '/needs': typeof NeedsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
+  '/needs/$needId': typeof NeedsNeedIdRoute
   '/needs/': typeof NeedsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ask' | '/needs/'
+  fullPaths: '/' | '/ask' | '/needs/$needId' | '/needs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ask' | '/needs'
-  id: '__root__' | '/' | '/ask' | '/needs/'
+  to: '/' | '/ask' | '/needs/$needId' | '/needs'
+  id: '__root__' | '/' | '/ask' | '/needs/$needId' | '/needs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AskRoute: typeof AskRoute
+  NeedsNeedIdRoute: typeof NeedsNeedIdRoute
   NeedsIndexRoute: typeof NeedsIndexRoute
 }
 
@@ -82,12 +92,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NeedsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/needs/$needId': {
+      id: '/needs/$needId'
+      path: '/needs/$needId'
+      fullPath: '/needs/$needId'
+      preLoaderRoute: typeof NeedsNeedIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AskRoute: AskRoute,
+  NeedsNeedIdRoute: NeedsNeedIdRoute,
   NeedsIndexRoute: NeedsIndexRoute,
 }
 export const routeTree = rootRouteImport
