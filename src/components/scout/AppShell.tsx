@@ -161,7 +161,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span className="absolute right-2 top-2 size-1.5 rounded-full bg-primary" />
             </Link>
             <Button asChild size="sm" className="h-9 gap-1.5">
-              <Link to="/ask">
+              <Link to="/ask" search={{ q: "" }}>
                 <Sparkles className="size-4" />
                 Ask Digital Scout
               </Link>

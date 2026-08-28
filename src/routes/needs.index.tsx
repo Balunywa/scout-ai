@@ -18,9 +18,6 @@ import { personName } from "@/lib/data/seed";
 import type { NeedStatus } from "@/lib/data/types";
 
 export const Route = createFileRoute("/needs/")({
-  validateSearch: (s: Record<string, unknown>) => ({
-    create: typeof s["create"] === "string" ? s["create"] : "",
-  }),
   head: () => ({
     meta: [
       { title: "Technology Needs — Digital Scout" },
@@ -80,7 +77,7 @@ function NeedsIndex() {
         actions={
           <>
             <Button asChild variant="outline" className="gap-1.5">
-              <Link to="/needs" search={{ create: "manual" }}>
+              <Link to="/needs">
                 <Plus className="size-4" /> New need
               </Link>
             </Button>

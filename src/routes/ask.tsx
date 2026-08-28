@@ -21,7 +21,9 @@ import { AiBadge, OriginBadge, Tag, WhyThis } from "@/components/scout/primitive
 import { createNeed, syncCompany, syncNeed, syncReport } from "@/lib/api/client";
 
 export const Route = createFileRoute("/ask")({
-  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s["q"] === "string" ? s["q"] : "" }),
+  validateSearch: (s: Record<string, unknown>): { q: string } => ({
+    q: typeof s["q"] === "string" ? s["q"] : "",
+  }),
   head: () => ({
     meta: [
       { title: "Ask Digital Scout — Halliburton" },
@@ -552,7 +554,7 @@ function AskPage() {
                 Keep answering Digital Scout's questions. You can create the need manually at any point.
               </p>
               <Button asChild variant="outline" size="sm" className="w-full">
-                <Link to="/needs" search={{ create: "manual" }}>
+                <Link to="/needs">
                   Use manual entry instead
                 </Link>
               </Button>
