@@ -1334,7 +1334,7 @@ export const needs: TechnologyNeed[] = [
       Medium: "Up to 100% H₂, 20 – 100 bar",
       Temperature: "-20 °C to 80 °C",
       Substrates: "X65, X70, 4130, 8630",
-      Design life: "20 years",
+      "Design life": "20 years",
     },
     constraints: [
       "Applicable in field to welded joints",
