@@ -203,7 +203,7 @@ export interface TestReport {
   needId: string;
   uploadedBy: string;
   uploadedAt: string;
-  source: "SharePoint" | "Azure Blob" | "Lab System";
+  source: "SharePoint" | "Azure Blob Storage" | "Lab System";
   summary: string;
   findings: string[];
   outcome: "Pass" | "Conditional Pass" | "Fail";
