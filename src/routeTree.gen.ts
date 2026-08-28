@@ -10,33 +10,167 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AskRouteImport } from './routes/ask'
+import { Route as FollowingRouteImport } from './routes/following'
+import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as CompaniesIndexRouteImport } from './routes/companies.index'
+import { Route as CompaniesCompanyIdRouteImport } from './routes/companies.$companyId'
+import { Route as EvaluationsIndexRouteImport } from './routes/evaluations.index'
+import { Route as EvaluationsEvaluationIdRouteImport } from './routes/evaluations.$evaluationId'
+import { Route as NeedsIndexRouteImport } from './routes/needs.index'
+import { Route as NeedsNeedIdRouteImport } from './routes/needs.$needId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AskRoute = AskRouteImport.update({
+  id: '/ask',
+  path: '/ask',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FollowingRoute = FollowingRouteImport.update({
+  id: '/following',
+  path: '/following',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KnowledgeRoute = KnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompaniesIndexRoute = CompaniesIndexRouteImport.update({
+  id: '/companies/',
+  path: '/companies/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompaniesCompanyIdRoute = CompaniesCompanyIdRouteImport.update({
+  id: '/companies/$companyId',
+  path: '/companies/$companyId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EvaluationsIndexRoute = EvaluationsIndexRouteImport.update({
+  id: '/evaluations/',
+  path: '/evaluations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EvaluationsEvaluationIdRoute = EvaluationsEvaluationIdRouteImport.update({
+  id: '/evaluations/$evaluationId',
+  path: '/evaluations/$evaluationId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NeedsIndexRoute = NeedsIndexRouteImport.update({
+  id: '/needs/',
+  path: '/needs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NeedsNeedIdRoute = NeedsNeedIdRouteImport.update({
+  id: '/needs/$needId',
+  path: '/needs/$needId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ask': typeof AskRoute
+  '/following': typeof FollowingRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/projects': typeof ProjectsRoute
+  '/companies/$companyId': typeof CompaniesCompanyIdRoute
+  '/evaluations/$evaluationId': typeof EvaluationsEvaluationIdRoute
+  '/needs/$needId': typeof NeedsNeedIdRoute
+  '/companies/': typeof CompaniesIndexRoute
+  '/evaluations/': typeof EvaluationsIndexRoute
+  '/needs/': typeof NeedsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ask': typeof AskRoute
+  '/following': typeof FollowingRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/projects': typeof ProjectsRoute
+  '/companies/$companyId': typeof CompaniesCompanyIdRoute
+  '/evaluations/$evaluationId': typeof EvaluationsEvaluationIdRoute
+  '/needs/$needId': typeof NeedsNeedIdRoute
+  '/companies': typeof CompaniesIndexRoute
+  '/evaluations': typeof EvaluationsIndexRoute
+  '/needs': typeof NeedsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ask': typeof AskRoute
+  '/following': typeof FollowingRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/projects': typeof ProjectsRoute
+  '/companies/$companyId': typeof CompaniesCompanyIdRoute
+  '/evaluations/$evaluationId': typeof EvaluationsEvaluationIdRoute
+  '/needs/$needId': typeof NeedsNeedIdRoute
+  '/companies/': typeof CompaniesIndexRoute
+  '/evaluations/': typeof EvaluationsIndexRoute
+  '/needs/': typeof NeedsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/ask'
+    | '/following'
+    | '/knowledge'
+    | '/projects'
+    | '/companies/$companyId'
+    | '/evaluations/$evaluationId'
+    | '/needs/$needId'
+    | '/companies/'
+    | '/evaluations/'
+    | '/needs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/ask'
+    | '/following'
+    | '/knowledge'
+    | '/projects'
+    | '/companies/$companyId'
+    | '/evaluations/$evaluationId'
+    | '/needs/$needId'
+    | '/companies'
+    | '/evaluations'
+    | '/needs'
+  id:
+    | '__root__'
+    | '/'
+    | '/ask'
+    | '/following'
+    | '/knowledge'
+    | '/projects'
+    | '/companies/$companyId'
+    | '/evaluations/$evaluationId'
+    | '/needs/$needId'
+    | '/companies/'
+    | '/evaluations/'
+    | '/needs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AskRoute: typeof AskRoute
+  FollowingRoute: typeof FollowingRoute
+  KnowledgeRoute: typeof KnowledgeRoute
+  ProjectsRoute: typeof ProjectsRoute
+  CompaniesCompanyIdRoute: typeof CompaniesCompanyIdRoute
+  EvaluationsEvaluationIdRoute: typeof EvaluationsEvaluationIdRoute
+  NeedsNeedIdRoute: typeof NeedsNeedIdRoute
+  CompaniesIndexRoute: typeof CompaniesIndexRoute
+  EvaluationsIndexRoute: typeof EvaluationsIndexRoute
+  NeedsIndexRoute: typeof NeedsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +182,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ask': {
+      id: '/ask'
+      path: '/ask'
+      fullPath: '/ask'
+      preLoaderRoute: typeof AskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/following': {
+      id: '/following'
+      path: '/following'
+      fullPath: '/following'
+      preLoaderRoute: typeof FollowingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/knowledge': {
+      id: '/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof KnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/companies/': {
+      id: '/companies/'
+      path: '/companies'
+      fullPath: '/companies/'
+      preLoaderRoute: typeof CompaniesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/companies/$companyId': {
+      id: '/companies/$companyId'
+      path: '/companies/$companyId'
+      fullPath: '/companies/$companyId'
+      preLoaderRoute: typeof CompaniesCompanyIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/evaluations/': {
+      id: '/evaluations/'
+      path: '/evaluations'
+      fullPath: '/evaluations/'
+      preLoaderRoute: typeof EvaluationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/evaluations/$evaluationId': {
+      id: '/evaluations/$evaluationId'
+      path: '/evaluations/$evaluationId'
+      fullPath: '/evaluations/$evaluationId'
+      preLoaderRoute: typeof EvaluationsEvaluationIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/needs/': {
+      id: '/needs/'
+      path: '/needs'
+      fullPath: '/needs/'
+      preLoaderRoute: typeof NeedsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/needs/$needId': {
+      id: '/needs/$needId'
+      path: '/needs/$needId'
+      fullPath: '/needs/$needId'
+      preLoaderRoute: typeof NeedsNeedIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AskRoute: AskRoute,
+  FollowingRoute: FollowingRoute,
+  KnowledgeRoute: KnowledgeRoute,
+  ProjectsRoute: ProjectsRoute,
+  CompaniesCompanyIdRoute: CompaniesCompanyIdRoute,
+  EvaluationsEvaluationIdRoute: EvaluationsEvaluationIdRoute,
+  NeedsNeedIdRoute: NeedsNeedIdRoute,
+  CompaniesIndexRoute: CompaniesIndexRoute,
+  EvaluationsIndexRoute: EvaluationsIndexRoute,
+  NeedsIndexRoute: NeedsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
