@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AskRouteImport } from './routes/ask'
+import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as CompaniesIndexRouteImport } from './routes/companies.index'
 import { Route as CompaniesCompanyIdRouteImport } from './routes/companies.$companyId'
 import { Route as EvaluationsIndexRouteImport } from './routes/evaluations.index'
@@ -26,6 +27,11 @@ const IndexRoute = IndexRouteImport.update({
 const AskRoute = AskRouteImport.update({
   id: '/ask',
   path: '/ask',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompaniesIndexRoute = CompaniesIndexRouteImport.update({
@@ -62,6 +68,7 @@ const NeedsNeedIdRoute = NeedsNeedIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
+  '/projects': typeof ProjectsRoute
   '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/evaluations/$evaluationId': typeof EvaluationsEvaluationIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
+  '/projects': typeof ProjectsRoute
   '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/evaluations/$evaluationId': typeof EvaluationsEvaluationIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
+  '/projects': typeof ProjectsRoute
   '/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/evaluations/$evaluationId': typeof EvaluationsEvaluationIdRoute
   '/needs/$needId': typeof NeedsNeedIdRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/ask'
+    | '/projects'
     | '/companies/$companyId'
     | '/evaluations/$evaluationId'
     | '/needs/$needId'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/ask'
+    | '/projects'
     | '/companies/$companyId'
     | '/evaluations/$evaluationId'
     | '/needs/$needId'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/ask'
+    | '/projects'
     | '/companies/$companyId'
     | '/evaluations/$evaluationId'
     | '/needs/$needId'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AskRoute: typeof AskRoute
+  ProjectsRoute: typeof ProjectsRoute
   CompaniesCompanyIdRoute: typeof CompaniesCompanyIdRoute
   EvaluationsEvaluationIdRoute: typeof EvaluationsEvaluationIdRoute
   NeedsNeedIdRoute: typeof NeedsNeedIdRoute
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/ask'
       fullPath: '/ask'
       preLoaderRoute: typeof AskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/companies/': {
@@ -198,6 +218,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AskRoute: AskRoute,
+  ProjectsRoute: ProjectsRoute,
   CompaniesCompanyIdRoute: CompaniesCompanyIdRoute,
   EvaluationsEvaluationIdRoute: EvaluationsEvaluationIdRoute,
   NeedsNeedIdRoute: NeedsNeedIdRoute,
