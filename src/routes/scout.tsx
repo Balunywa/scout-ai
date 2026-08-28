@@ -33,7 +33,7 @@ export const Route = createFileRoute("/scout")({
       },
     ],
   }),
-  component: ScoutWorkspace;
+  component: ScoutWorkspace,
 });
 
 function ScoutWorkspace() {
