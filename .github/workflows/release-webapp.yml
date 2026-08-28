@@ -1,0 +1,98 @@
+name: Release Web App
+
+# Builds a fully self-contained, prebuilt deployment package for the Digital
+# Scout web app and publishes it as a stable GitHub Release asset. The ARM
+# template (deploy/azure/azuredeploy.json) points WEBSITE_RUN_FROM_PACKAGE at
+# this asset, so Azure App Service mounts it read-only with NO server-side
+# build — eliminating the empty-wwwroot / Oryx-build class of failures.
+#
+# Stable download URL (public repo):
+#   https://github.com/Balunywa/scout-ai/releases/download/app-latest/scout-ai-app.zip
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "package.json"
+      - "bun.lock"
+      - "vite.config.ts"
+      - "tsconfig.json"
+      - ".github/workflows/release-webapp.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-webapp
+  cancel-in-progress: true
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build web app (SSR)
+        run: bun run build
+
+      - name: Stage package
+        run: |
+          set -euo pipefail
+          STAGE="$RUNNER_TEMP/scout-ai-app"
+          rm -rf "$STAGE"
+          mkdir -p "$STAGE"
+
+          # The nitro node-server build output is fully self-contained (its
+          # traced node_modules are included). Ship its contents at the archive
+          # root so App Service can run it with no install and no build step.
+          cp -R .output/. "$STAGE/"
+
+          # Root package.json: the App Service entry point.
+          cat > "$STAGE/package.json" <<'JSON'
+          {
+            "name": "scout-ai-app",
+            "private": true,
+            "version": "0.0.0",
+            "type": "module",
+            "scripts": {
+              "start": "node server/index.mjs"
+            }
+          }
+          JSON
+
+          echo "Staged package contents:"
+          ls -la "$STAGE"
+
+      - name: Zip package (contents at archive root)
+        run: |
+          set -euo pipefail
+          STAGE="$RUNNER_TEMP/scout-ai-app"
+          OUT="$RUNNER_TEMP/scout-ai-app.zip"
+          rm -f "$OUT"
+          ( cd "$STAGE" && zip -qr "$OUT" . )
+          echo "ARTIFACT_ZIP=$OUT" >> "$GITHUB_ENV"
+          ls -la "$OUT"
+
+      - name: Publish stable release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-latest
+          name: Digital Scout Web App (latest build)
+          body: |
+            Prebuilt, self-contained Digital Scout web app package.
+            Consumed by the ARM template via WEBSITE_RUN_FROM_PACKAGE.
+            Commit: ${{ github.sha }}
+          files: ${{ env.ARTIFACT_ZIP }}
+          make_latest: true

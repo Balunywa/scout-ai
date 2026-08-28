@@ -1,0 +1,74 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+  "handler": "Microsoft.Azure.CreateUIDef",
+  "version": "0.1.2-preview",
+  "parameters": {
+    "config": {
+      "isWizard": false,
+      "basics": {
+        "description": "Deploy the **Digital Scout** web app to Azure App Service (Linux, Node 22 LTS). The app is served from a prebuilt, self-contained package — no build runs in Azure.",
+        "location": {
+          "label": "Region",
+          "toolTip": "Azure region for the App Service plan and web app.",
+          "resourceTypes": ["Microsoft.Web/sites"]
+        }
+      }
+    },
+    "basics": [
+      {
+        "name": "webAppName",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Web app name",
+        "toolTip": "Globally unique name. The site is reachable at https://<name>.azurewebsites.net.",
+        "defaultValue": "",
+        "constraints": {
+          "required": true,
+          "regex": "^[a-z0-9][a-z0-9-]{1,58}[a-z0-9]$",
+          "validationMessage": "3-60 characters: lowercase letters, numbers, and hyphens; must start and end with a letter or number."
+        }
+      }
+    ],
+    "steps": [
+      {
+        "name": "appConfig",
+        "label": "App settings",
+        "elements": [
+          {
+            "name": "sku",
+            "type": "Microsoft.Common.DropDown",
+            "label": "App Service plan SKU",
+            "defaultValue": "B1 (Basic)",
+            "toolTip": "Compute tier for the App Service plan.",
+            "constraints": {
+              "allowedValues": [
+                { "label": "B1 (Basic)", "value": "B1" },
+                { "label": "B2 (Basic)", "value": "B2" },
+                { "label": "S1 (Standard)", "value": "S1" },
+                { "label": "P1v3 (Premium v3)", "value": "P1v3" }
+              ],
+              "required": true
+            }
+          },
+          {
+            "name": "packageUrl",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Package URL",
+            "defaultValue": "https://github.com/Balunywa/scout-ai/releases/download/app-latest/scout-ai-app.zip",
+            "toolTip": "Public URL of the prebuilt web app zip published by the release workflow.",
+            "constraints": {
+              "required": true,
+              "regex": "^https://.+\\.zip$",
+              "validationMessage": "Enter a valid https URL ending in .zip."
+            }
+          }
+        ]
+      }
+    ],
+    "outputs": {
+      "webAppName": "[basics('webAppName')]",
+      "location": "[location()]",
+      "sku": "[steps('appConfig').sku]",
+      "packageUrl": "[steps('appConfig').packageUrl]"
+    }
+  }
+}

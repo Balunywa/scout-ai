@@ -12,6 +12,33 @@ The platform then helps define the need, finds relevant internal knowledge, iden
 
 ---
 
+## Deploy the web app to Azure
+
+Deploy the Digital Scout web app directly into your own Azure subscription. This one-click deployment provisions an **Azure App Service (Linux, Node 22 LTS)** and runs a prebuilt, self-contained package — no build runs in Azure.
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBalunywa%2Fscout-ai%2Fmain%2Fdeploy%2Fazure%2Fazuredeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FBalunywa%2Fscout-ai%2Fmain%2Fdeploy%2Fazure%2FcreateUiDefinition.json)
+
+**How it works:**
+
+1. A GitHub Actions workflow ([.github/workflows/release-webapp.yml](.github/workflows/release-webapp.yml)) builds the SSR app on every push to `main` and publishes a self-contained `scout-ai-app.zip` to the stable `app-latest` GitHub Release.
+2. The ARM template ([deploy/azure/azuredeploy.json](deploy/azure/azuredeploy.json)) creates the App Service and sets `WEBSITE_RUN_FROM_PACKAGE` to that release zip URL, so Azure mounts the package read-only and starts it with `node server/index.mjs`.
+
+After deployment completes, open the `webAppUrl` shown in the deployment outputs to reach the running app at `https://<web-app-name>.azurewebsites.net`.
+
+> **Scope:** This deploys the web application only. The backing Azure AI, data, and search services described later in this document are provisioned separately per customer environment.
+
+---
+
+## Run locally
+
+```bash
+bun install
+bun run dev      # start the dev server at http://localhost:3000
+bun run build    # produce the self-contained .output/ SSR bundle
+```
+
+---
+
 ## Why this exists
 
 Large organizations often have no shortage of technical expertise. The problem is that the expertise is distributed across people, documents, inboxes, business units, and disconnected systems.
