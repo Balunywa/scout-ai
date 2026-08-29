@@ -336,43 +336,38 @@ This lets customers answer questions such as:
 
 Digital Scout is designed to run on Microsoft Azure and integrate with the customer's existing Microsoft data and collaboration estate.
 
-```
-Users / Engineers / Scouts / SMEs
-             |
-             v
-Web App / Teams / Microsoft 365 Experience
-             |
-             v
-Azure-hosted Application & API Layer
-             |
-             v
-AI Orchestration Layer
-Azure AI Foundry
-             |
-     +-------+---------+----------+-----------+
-     |                 |          |           |
-     v                 v          v           v
-Need Definition   Knowledge   Research /   Evaluation
-Agent             Agent       Matching     Agent
-                              Agent
-     |                 |          |           |
-     +-----------------+----------+-----------+
-                       |
-                       v
-                  Azure AI Search
-                       |
-   +-------------+------+------+---------------+
-   |             |             |               |
-   v             v             v               v
-Azure         Azure         Blob / ADLS   Microsoft 365 /
-Database for  Cosmos DB     Documents     SharePoint / Graph
-PostgreSQL    (agent +
-(domain       conversation
- model)        state)
-   |
-   v
-Microsoft Fabric / OneLake
-(portfolio analytics — Phase 3)
+```mermaid
+flowchart TD
+    U([Users · Engineers · Scouts · SMEs])
+    U --> WEB
+    U --> M365S[Teams / Microsoft 365 surface]
+
+    WEB["Web App · React / TanStack Start SSR<br/>Azure App Service · Linux · run-from-package"]
+    WEB -->|"HTTPS /api/*"| API["Application and API Layer<br/>Azure Container Apps / Azure Functions"]
+    M365S -.-> API
+
+    API --> ORCH["AI Orchestration Layer<br/>Azure AI Foundry"]
+
+    subgraph AGENTS [Specialized Agents]
+        A1[Need Definition Agent]
+        A2[Knowledge Agent]
+        A3[Research / Matching Agent]
+        A4[Evaluation Agent]
+    end
+
+    ORCH --> A1 & A2 & A3 & A4
+    A1 & A2 & A3 & A4 --> SEARCH["Azure AI Search<br/>vector + semantic RAG"]
+
+    subgraph DATA [Data and Content]
+        PG[("Azure Database for PostgreSQL<br/>domain model + pgvector")]
+        COS[("Azure Cosmos DB for NoSQL<br/>agent + conversation state")]
+        BLOB[("Blob / ADLS<br/>documents and reports")]
+        M365["Microsoft 365 / SharePoint / Graph"]
+    end
+
+    SEARCH --> PG & COS & BLOB & M365
+
+    PG --> FABRIC["Microsoft Fabric / OneLake<br/>portfolio analytics — Phase 3"]
 ```
 
 ---
