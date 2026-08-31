@@ -336,51 +336,7 @@ This lets customers answer questions such as:
 
 Digital Scout is designed to run on Microsoft Azure and integrate with the customer's existing Microsoft data and collaboration estate.
 
-```mermaid
-flowchart LR
-    U([Users · Engineers · Scouts · SMEs])
-
-    subgraph STORAGE [Storage Account]
-        subgraph SRC [Data Sources]
-            SP[SharePoint / M365]
-            REP[Reports / Evaluations]
-            TST[Test Reports / Docs]
-            OTH[Other Documents]
-        end
-        subgraph PREP [Ingestion & Preparation]
-            EXT[Extract] --> CHK[Chunk] --> EMB[Embed] --> MET[Metadata]
-        end
-    end
-
-    SEARCH["Azure AI Search<br/>Hybrid + Vector Index"]
-    OAIE["Azure OpenAI<br/>Embeddings API"]
-    LLM["Foundry / LLM<br/>Orchestration & Reasoning"]
-    OAIC["Azure OpenAI<br/>Completions API"]
-
-    subgraph COSMOS [Azure Cosmos DB]
-        CDATA[Source Data]
-        CHIST["Prompts & Completions<br/>History · Conversations"]
-    end
-
-    WEB["Q&A Web App<br/>React + TanStack Start"]
-
-    %% Backend data flow — ingestion, indexing, read/write
-    SRC -->|"1 · Ingest / Change Feed Source Documents"| SEARCH
-    SEARCH -->|"2 · Request Embeddings"| OAIE
-    OAIE -->|"3 · Index Documents & Embedding Vectors"| SEARCH
-    LLM <-->|"4 · Store / Retrieve Q&A & Conversation History"| COSMOS
-    OAIC <-->|"5 · Persist Prompts & Completions"| COSMOS
-    SEARCH -->|"6 · Persist Q&A / Conversation History"| COSMOS
-
-    %% Frontend workflow — user to system
-    COSMOS -.->|"0 · Load Q&A Session · User, Needs, Context"| WEB
-    U ==>|"1 · Ask Question / Interact"| WEB
-    WEB -->|"2 · Submit Question & History"| SEARCH
-    SEARCH -->|"3 · Request Question Embedding"| OAIE
-    SEARCH -->|"4 · Search for Context Data"| LLM
-    LLM -->|"5 · Request Completion"| OAIC
-    OAIC -->|"6 · Return Answer with Citations"| WEB
-```
+![Digital Scout Azure-native logical architecture](docs/images/azure-architecture.png)
 
 ---
 
