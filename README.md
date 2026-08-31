@@ -337,37 +337,49 @@ This lets customers answer questions such as:
 Digital Scout is designed to run on Microsoft Azure and integrate with the customer's existing Microsoft data and collaboration estate.
 
 ```mermaid
-flowchart TD
+flowchart LR
     U([Users · Engineers · Scouts · SMEs])
-    U --> WEB
-    U --> M365S[Teams / Microsoft 365 surface]
 
-    WEB["Web App · React / TanStack Start SSR<br/>Azure App Service · Linux · run-from-package"]
-    WEB -->|"HTTPS /api/*"| API["Application and API Layer<br/>Azure Container Apps / Azure Functions"]
-    M365S -.-> API
-
-    API --> ORCH["AI Orchestration Layer<br/>Azure AI Foundry"]
-
-    subgraph AGENTS [Specialized Agents]
-        A1[Need Definition Agent]
-        A2[Knowledge Agent]
-        A3[Research / Matching Agent]
-        A4[Evaluation Agent]
+    subgraph STORAGE [Storage Account]
+        subgraph SRC [Data Sources]
+            SP[SharePoint / M365]
+            REP[Reports / Evaluations]
+            TST[Test Reports / Docs]
+            OTH[Other Documents]
+        end
+        subgraph PREP [Ingestion & Preparation]
+            EXT[Extract] --> CHK[Chunk] --> EMB[Embed] --> MET[Metadata]
+        end
     end
 
-    ORCH --> A1 & A2 & A3 & A4
-    A1 & A2 & A3 & A4 --> SEARCH["Azure AI Search<br/>vector + semantic RAG"]
+    SEARCH["Azure AI Search<br/>Hybrid + Vector Index"]
+    OAIE["Azure OpenAI<br/>Embeddings API"]
+    LLM["Foundry / LLM<br/>Orchestration & Reasoning"]
+    OAIC["Azure OpenAI<br/>Completions API"]
 
-    subgraph DATA [Data and Content]
-        PG[("Azure Database for PostgreSQL<br/>domain model + pgvector")]
-        COS[("Azure Cosmos DB for NoSQL<br/>agent + conversation state")]
-        BLOB[("Blob / ADLS<br/>documents and reports")]
-        M365["Microsoft 365 / SharePoint / Graph"]
+    subgraph COSMOS [Azure Cosmos DB]
+        CDATA[Source Data]
+        CHIST["Prompts & Completions<br/>History · Conversations"]
     end
 
-    SEARCH --> PG & COS & BLOB & M365
+    WEB["Q&A Web App<br/>React + TanStack Start"]
 
-    PG --> FABRIC["Microsoft Fabric / OneLake<br/>portfolio analytics — Phase 3"]
+    %% Backend data flow — ingestion, indexing, read/write
+    SRC -->|"1 · Ingest / Change Feed Source Documents"| SEARCH
+    SEARCH -->|"2 · Request Embeddings"| OAIE
+    OAIE -->|"3 · Index Documents & Embedding Vectors"| SEARCH
+    LLM <-->|"4 · Store / Retrieve Q&A & Conversation History"| COSMOS
+    OAIC <-->|"5 · Persist Prompts & Completions"| COSMOS
+    SEARCH -->|"6 · Persist Q&A / Conversation History"| COSMOS
+
+    %% Frontend workflow — user to system
+    COSMOS -.->|"0 · Load Q&A Session · User, Needs, Context"| WEB
+    U ==>|"1 · Ask Question / Interact"| WEB
+    WEB -->|"2 · Submit Question & History"| SEARCH
+    SEARCH -->|"3 · Request Question Embedding"| OAIE
+    SEARCH -->|"4 · Search for Context Data"| LLM
+    LLM -->|"5 · Request Completion"| OAIC
+    OAIC -->|"6 · Return Answer with Citations"| WEB
 ```
 
 ---
