@@ -61,7 +61,7 @@ Digital Scout addresses that gap by making organizational technology knowledge c
 
 **In one sentence:** a user asks a question in plain language, an AI agent decides where to look, and it answers **only from information that user is allowed to see** — every answer backed by citations.
 
-Digital Scout runs entirely on Microsoft Azure and plugs into the Microsoft data you already have (SharePoint, OneDrive, databases, Microsoft Fabric). The design keeps the user's identity attached end-to-end, so security and permissions are enforced by your existing Microsoft systems — Digital Scout never becomes a way to see data you couldn't see otherwise.
+Digital Scout runs entirely on Microsoft Azure and plugs into the Microsoft data you already have (SharePoint, databases, Microsoft Fabric). The design keeps the user's identity attached end-to-end, so security and permissions are enforced by your existing Microsoft systems — Digital Scout never becomes a way to see data you couldn't see otherwise.
 
 > **How to read the diagram.** The work is split into three **planes** (think of them as "departments," each responsible for one kind of answer) plus a **toolbox** for reaching outside systems. The numbered arrows in the diagram follow a single question from sign-in to answer.
 
@@ -73,7 +73,7 @@ Digital Scout runs entirely on Microsoft Azure and plugs into the Microsoft data
 
 - **Application & Agent Plane — "the front door and the brain."** The React web app runs on **Azure App Service**. Every question goes to the **Azure AI Foundry Agent Service**, which is the reasoning engine: it plans, decides which sources to use, and calls the right tools. Two operational stores sit here: **Azure Cosmos DB** keeps the running conversation (chat history/state), and **Azure Database for PostgreSQL (Flexible Server)** — reached through a **Domain API** — holds the structured business records (needs, companies, evaluations, projects).
 
-- **Knowledge Plane — "find it in the documents."** When a question needs answers from documents, the agent asks **Foundry IQ** *(preview)*, Azure's managed knowledge/retrieval layer. It searches with **Azure AI Search** (combining keyword + meaning-based "vector" search) across your content — Blob storage, SharePoint, OneDrive, and approved web sources. Results are **permission-trimmed**: the search only returns files that the signed-in user already has access to, using Entra ID sign-in, each source's own access lists (ACLs), and **Microsoft Purview** for sensitivity labels and governance.
+- **Knowledge Plane — "find it in the documents."** When a question needs answers from documents, the agent asks **Foundry IQ** *(preview)*, Azure's managed knowledge/retrieval layer. It searches with **Azure AI Search** (combining keyword + meaning-based "vector" search) across your content — Blob storage, SharePoint, and approved web sources. Results are **permission-trimmed**: the search only returns files that the signed-in user already has access to, using Entra ID sign-in, each source's own access lists (ACLs), and **Microsoft Purview** for sensitivity labels and governance.
 
 - **Intelligence Plane — "answer from the business data."** For questions about numbers, trends, and relationships, the agent uses a **Microsoft Fabric data agent** *(preview)* — attached as a built-in Foundry tool — to reason over your analytics data in **OneLake**. It runs **as the signed-in user** (identity passthrough, also called *On-Behalf-Of / OBO*), so Fabric's own row- and column-level security still applies. Your PostgreSQL business data is copied into OneLake automatically with **Fabric Mirroring (zero-ETL)** *(preview)* — no separate pipelines to build.
 
@@ -382,7 +382,7 @@ The accelerator is designed around Azure services that can be replaced or extend
 | Business context, semantics, and analytics | Microsoft Fabric data agent (Fabric IQ) *(preview)* over OneLake |
 | Operational-to-analytics replication | Fabric Mirroring for PostgreSQL (zero-ETL) *(preview)* |
 | External tools and enterprise systems | MCP server (Model Context Protocol) |
-| Documents and reports | Azure Blob Storage / SharePoint / OneDrive |
+| Documents and reports | Azure Blob Storage / SharePoint |
 | Web application hosting | Azure App Service (Linux, Node 22 LTS) |
 | Secrets and keys | Azure Key Vault |
 | Monitoring and telemetry | Azure Monitor / Application Insights |
