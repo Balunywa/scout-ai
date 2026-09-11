@@ -48,6 +48,8 @@ import type {
   TechnologyNeed,
   TestReport,
 } from "../data/types";
+import { askScout as askScoutServerFn, summarizeSearch } from "../server/agent";
+import type { ChatTurn, GroundingHit } from "../server/agent";
 
 export const API_BASE_URL = (import.meta.env["VITE_DIGITAL_SCOUT_API_URL"] as string) ?? "/api";
 export const USING_MOCK_ADAPTER = !import.meta.env["VITE_DIGITAL_SCOUT_API_URL"];
@@ -348,15 +350,73 @@ export async function search(query: string): Promise<SearchResponse> {
   const evalCount = top.filter((h) => h.type === "evaluation").length;
   const companyCount = top.filter((h) => h.type === "company").length;
 
-  const summary = top.length
+  const templatedSummary = top.length
     ? `Contoso has prior work related to "${query}". Digital Scout found ${needCount} technology need${needCount === 1 ? "" : "s"}, ${companyCount} compan${companyCount === 1 ? "y" : "ies"} and ${evalCount} evaluation${evalCount === 1 ? "" : "s"} in the internal knowledge index. The strongest match is ${top[0]!.title}. Review the internal evidence below before starting new work.`
     : `No indexed Contoso knowledge matched "${query}". Digital Scout can start an external discovery run through the Company Research Agent.`;
+
+  // Replace the templated briefing with a real Azure OpenAI summary when the
+  // AI Foundry deployment is configured; otherwise keep the templated text.
+  let summary = templatedSummary;
+  try {
+    const ai = await summarizeSearch({ data: { query, hits: toGroundingHits(top) } });
+    if (ai.configured && ai.summary) summary = ai.summary;
+  } catch {
+    // Ignore and use the templated summary.
+  }
 
   return {
     query,
     summary,
     citations: top.slice(0, 4).map((h) => ({ label: h.title, href: h.href })),
     hits: top,
+  };
+}
+
+/** Map internal search hits to the compact grounding payload sent to the agent. */
+const toGroundingHits = (hits: SearchHit[]): GroundingHit[] =>
+  hits.slice(0, 8).map((h) => ({
+    title: h.title,
+    type: h.type,
+    snippet: h.snippet,
+    href: h.href,
+  }));
+
+export interface AskScoutResult {
+  answer: string;
+  citations: { label: string; href: string }[];
+  /** True when the answer came from Azure AI Foundry, false for the seed fallback. */
+  grounded: boolean;
+}
+
+/**
+ * Ask Digital Scout a free-form question. Retrieves internal matches via the
+ * knowledge index, then grounds an Azure AI Foundry answer on them. When the
+ * AI deployment is not configured it returns a deterministic summary built from
+ * the same internal matches so the experience still works offline.
+ */
+export async function askScout(
+  query: string,
+  history: ChatTurn[] = [],
+  conversationId?: string,
+): Promise<AskScoutResult> {
+  const results = await search(query);
+  const hits = toGroundingHits(results.hits);
+  try {
+    const ai = await askScoutServerFn({ data: { query, hits, history, conversationId } });
+    if (ai.configured && ai.answer) {
+      return {
+        answer: ai.answer,
+        citations: ai.citations ?? results.citations,
+        grounded: true,
+      };
+    }
+  } catch {
+    // Fall through to the seed-based answer below.
+  }
+  return {
+    answer: results.summary,
+    citations: results.citations,
+    grounded: false,
   };
 }
 
