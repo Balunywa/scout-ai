@@ -6,35 +6,47 @@
     "config": {
       "isWizard": false,
       "basics": {
-        "description": "Deploy the **Digital Scout** web app to Azure App Service (Linux, Node 22 LTS). The app is served from a prebuilt, self-contained package — no build runs in Azure.",
+        "description": "Deploy the **Digital Scout** Azure-native accelerator. This provisions the web app (App Service, Linux/Node 22) plus the optional agent, knowledge, and data planes — Azure AI Foundry, Azure AI Search, Cosmos DB, PostgreSQL, Storage, Key Vault, and monitoring. Everything is keyless: the web app uses a managed identity with RBAC on each service.",
         "location": {
           "label": "Region",
-          "toolTip": "Azure region for the App Service plan and web app.",
+          "toolTip": "Azure region for all resources.",
           "resourceTypes": ["Microsoft.Web/sites"]
         }
       }
     },
     "basics": [
       {
-        "name": "webAppName",
+        "name": "namePrefix",
         "type": "Microsoft.Common.TextBox",
-        "label": "Web app name",
-        "toolTip": "Globally unique name. The site is reachable at https://<name>.azurewebsites.net.",
-        "defaultValue": "",
+        "label": "Resource name prefix",
+        "toolTip": "Base name used to derive all resource names. Lowercase letters and numbers, 3-20 characters.",
+        "defaultValue": "digitalscout",
         "constraints": {
           "required": true,
-          "regex": "^[a-z0-9][a-z0-9-]{1,58}[a-z0-9]$",
-          "validationMessage": "3-60 characters: lowercase letters, numbers, and hyphens; must start and end with a letter or number."
+          "regex": "^[a-z0-9]{3,20}$",
+          "validationMessage": "3-20 characters: lowercase letters and numbers only."
+        }
+      },
+      {
+        "name": "webAppName",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Web app name (optional)",
+        "toolTip": "Globally unique name for the web app. Leave blank to auto-generate one. Reachable at https://<name>.azurewebsites.net.",
+        "defaultValue": "",
+        "constraints": {
+          "required": false,
+          "regex": "^$|^[a-z0-9][a-z0-9-]{1,58}[a-z0-9]$",
+          "validationMessage": "Leave blank, or use 3-60 characters: lowercase letters, numbers, and hyphens; must start and end with a letter or number."
         }
       }
     ],
     "steps": [
       {
-        "name": "appConfig",
-        "label": "App settings",
+        "name": "webApp",
+        "label": "Web app",
         "elements": [
           {
-            "name": "sku",
+            "name": "appServiceSku",
             "type": "Microsoft.Common.DropDown",
             "label": "App Service plan SKU",
             "defaultValue": "B1 (Basic)",
@@ -43,8 +55,11 @@
               "allowedValues": [
                 { "label": "B1 (Basic)", "value": "B1" },
                 { "label": "B2 (Basic)", "value": "B2" },
+                { "label": "B3 (Basic)", "value": "B3" },
                 { "label": "S1 (Standard)", "value": "S1" },
-                { "label": "P1v3 (Premium v3)", "value": "P1v3" }
+                { "label": "P0v3 (Premium v3)", "value": "P0v3" },
+                { "label": "P1v3 (Premium v3)", "value": "P1v3" },
+                { "label": "P2v3 (Premium v3)", "value": "P2v3" }
               ],
               "required": true
             }
@@ -62,13 +77,193 @@
             }
           }
         ]
+      },
+      {
+        "name": "platform",
+        "label": "Data & AI services",
+        "elements": [
+          {
+            "name": "planesInfo",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": true,
+            "options": {
+              "icon": "Info",
+              "text": "Select which planes of the architecture to deploy. Turn services off to reduce cost for a lighter deployment."
+            }
+          },
+          {
+            "name": "deployMonitoring",
+            "type": "Microsoft.Common.CheckBox",
+            "label": "Deploy monitoring (Log Analytics + Application Insights)",
+            "defaultValue": true
+          },
+          {
+            "name": "deployKeyVault",
+            "type": "Microsoft.Common.CheckBox",
+            "label": "Deploy Key Vault",
+            "defaultValue": true
+          },
+          {
+            "name": "deployStorage",
+            "type": "Microsoft.Common.CheckBox",
+            "label": "Deploy Storage (documents & reports)",
+            "defaultValue": true
+          },
+          {
+            "name": "deploySearch",
+            "type": "Microsoft.Common.CheckBox",
+            "label": "Deploy Azure AI Search (knowledge plane)",
+            "defaultValue": true
+          },
+          {
+            "name": "searchSku",
+            "type": "Microsoft.Common.DropDown",
+            "label": "Azure AI Search SKU",
+            "defaultValue": "Basic",
+            "visible": "[steps('platform').deploySearch]",
+            "toolTip": "Pricing tier for Azure AI Search.",
+            "constraints": {
+              "allowedValues": [
+                { "label": "Basic", "value": "basic" },
+                { "label": "Standard S1", "value": "standard" },
+                { "label": "Standard S2", "value": "standard2" },
+                { "label": "Standard S3", "value": "standard3" }
+              ],
+              "required": true
+            }
+          },
+          {
+            "name": "deployCosmos",
+            "type": "Microsoft.Common.CheckBox",
+            "label": "Deploy Cosmos DB (agent state & conversation history)",
+            "defaultValue": true
+          },
+          {
+            "name": "deployPostgres",
+            "type": "Microsoft.Common.CheckBox",
+            "label": "Deploy PostgreSQL Flexible Server (domain data + pgvector)",
+            "defaultValue": true
+          },
+          {
+            "name": "postgresAdminLogin",
+            "type": "Microsoft.Common.TextBox",
+            "label": "PostgreSQL admin login",
+            "defaultValue": "scoutadmin",
+            "visible": "[steps('platform').deployPostgres]",
+            "toolTip": "Administrator login name for the PostgreSQL Flexible Server.",
+            "constraints": {
+              "required": "[steps('platform').deployPostgres]",
+              "regex": "^[a-z][a-z0-9]{2,62}$",
+              "validationMessage": "3-63 characters: start with a lowercase letter, then lowercase letters and numbers."
+            }
+          },
+          {
+            "name": "postgresAdminPassword",
+            "type": "Microsoft.Common.PasswordBox",
+            "label": {
+              "password": "PostgreSQL admin password",
+              "confirmPassword": "Confirm password"
+            },
+            "visible": "[steps('platform').deployPostgres]",
+            "toolTip": "Administrator password for the PostgreSQL Flexible Server.",
+            "constraints": {
+              "required": "[steps('platform').deployPostgres]",
+              "regex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{12,128}$",
+              "validationMessage": "12-128 characters, including at least one lowercase, one uppercase, and one number."
+            },
+            "options": {
+              "hideConfirmation": false
+            }
+          }
+        ]
+      },
+      {
+        "name": "aiFoundry",
+        "label": "Azure AI Foundry",
+        "elements": [
+          {
+            "name": "deployAiFoundry",
+            "type": "Microsoft.Common.CheckBox",
+            "label": "Deploy Azure AI Foundry with chat + embedding models",
+            "defaultValue": true
+          },
+          {
+            "name": "chatModelName",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Chat model",
+            "defaultValue": "gpt-4o-mini",
+            "visible": "[steps('aiFoundry').deployAiFoundry]",
+            "toolTip": "OpenAI chat/reasoning model to deploy.",
+            "constraints": { "required": true }
+          },
+          {
+            "name": "chatModelVersion",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Chat model version",
+            "defaultValue": "2024-07-18",
+            "visible": "[steps('aiFoundry').deployAiFoundry]",
+            "constraints": { "required": true }
+          },
+          {
+            "name": "chatModelCapacity",
+            "type": "Microsoft.Common.Slider",
+            "label": "Chat model capacity (K TPM)",
+            "defaultValue": 20,
+            "min": 1,
+            "max": 200,
+            "visible": "[steps('aiFoundry').deployAiFoundry]",
+            "toolTip": "Deployment capacity in thousands of tokens per minute."
+          },
+          {
+            "name": "embeddingModelName",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Embedding model",
+            "defaultValue": "text-embedding-3-large",
+            "visible": "[steps('aiFoundry').deployAiFoundry]",
+            "constraints": { "required": true }
+          },
+          {
+            "name": "embeddingModelVersion",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Embedding model version",
+            "defaultValue": "1",
+            "visible": "[steps('aiFoundry').deployAiFoundry]",
+            "constraints": { "required": true }
+          },
+          {
+            "name": "embeddingModelCapacity",
+            "type": "Microsoft.Common.Slider",
+            "label": "Embedding model capacity (K TPM)",
+            "defaultValue": 20,
+            "min": 1,
+            "max": 200,
+            "visible": "[steps('aiFoundry').deployAiFoundry]"
+          }
+        ]
       }
     ],
     "outputs": {
+      "namePrefix": "[basics('namePrefix')]",
       "webAppName": "[basics('webAppName')]",
       "location": "[location()]",
-      "sku": "[steps('appConfig').sku]",
-      "packageUrl": "[steps('appConfig').packageUrl]"
+      "appServiceSku": "[steps('webApp').appServiceSku]",
+      "packageUrl": "[steps('webApp').packageUrl]",
+      "deployMonitoring": "[steps('platform').deployMonitoring]",
+      "deployKeyVault": "[steps('platform').deployKeyVault]",
+      "deployStorage": "[steps('platform').deployStorage]",
+      "deploySearch": "[steps('platform').deploySearch]",
+      "searchSku": "[steps('platform').searchSku]",
+      "deployCosmos": "[steps('platform').deployCosmos]",
+      "deployPostgres": "[steps('platform').deployPostgres]",
+      "postgresAdminLogin": "[steps('platform').postgresAdminLogin]",
+      "postgresAdminPassword": "[steps('platform').postgresAdminPassword]",
+      "deployAiFoundry": "[steps('aiFoundry').deployAiFoundry]",
+      "chatModelName": "[steps('aiFoundry').chatModelName]",
+      "chatModelVersion": "[steps('aiFoundry').chatModelVersion]",
+      "chatModelCapacity": "[steps('aiFoundry').chatModelCapacity]",
+      "embeddingModelName": "[steps('aiFoundry').embeddingModelName]",
+      "embeddingModelVersion": "[steps('aiFoundry').embeddingModelVersion]",
+      "embeddingModelCapacity": "[steps('aiFoundry').embeddingModelCapacity]"
     }
   }
 }

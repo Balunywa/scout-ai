@@ -2,50 +2,553 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "metadata": {
-    "description": "Deploys the Digital Scout web app to Azure App Service (Linux, Node 22 LTS). The app is served from a prebuilt, self-contained GitHub Release zip via WEBSITE_RUN_FROM_PACKAGE, so no build runs in Azure."
+    "_generator": {
+      "name": "bicep",
+      "version": "0.46.1.21595",
+      "templateHash": "9468034721661640028"
+    }
   },
   "parameters": {
-    "webAppName": {
+    "namePrefix": {
       "type": "string",
-      "defaultValue": "[concat('digital-scout-', uniqueString(resourceGroup().id))]",
+      "defaultValue": "digitalscout",
+      "minLength": 3,
+      "maxLength": 20,
       "metadata": {
-        "description": "Globally unique name for the web app. The site is reachable at https://<name>.azurewebsites.net."
+        "description": "Base name used to derive resource names. Lowercase letters and numbers, 3-20 chars."
       }
     },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
       "metadata": {
-        "description": "Azure region for the App Service plan and web app."
+        "description": "Azure region for all resources. Defaults to the resource group location."
       }
     },
-    "sku": {
+    "webAppName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Globally unique name for the web app. Leave blank to auto-generate one from the resource group id."
+      }
+    },
+    "appServiceSku": {
       "type": "string",
       "defaultValue": "B1",
-      "allowedValues": ["B1", "B2", "B3", "S1", "S2", "S3", "P0v3", "P1v3", "P2v3"],
+      "allowedValues": [
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P0v3",
+        "P1v3",
+        "P2v3"
+      ],
       "metadata": {
-        "description": "App Service plan SKU (compute tier)."
+        "description": "App Service plan SKU (compute tier) for the web app."
       }
     },
     "packageUrl": {
       "type": "string",
       "defaultValue": "https://github.com/Balunywa/scout-ai/releases/download/app-latest/scout-ai-app.zip",
       "metadata": {
-        "description": "Public URL of the prebuilt web app zip. App Service mounts it read-only via WEBSITE_RUN_FROM_PACKAGE."
+        "description": "Public URL of the prebuilt, self-contained web app zip. App Service mounts it read-only via WEBSITE_RUN_FROM_PACKAGE."
+      }
+    },
+    "deployMonitoring": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Deploy Log Analytics + Application Insights for monitoring and telemetry."
+      }
+    },
+    "deployKeyVault": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Deploy an Azure Key Vault (RBAC mode) for secrets and keys."
+      }
+    },
+    "deployStorage": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Deploy a Storage account with blob containers for documents and reports."
+      }
+    },
+    "deploySearch": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Deploy Azure AI Search for the knowledge plane (semantic + vector index)."
+      }
+    },
+    "searchSku": {
+      "type": "string",
+      "defaultValue": "basic",
+      "allowedValues": [
+        "basic",
+        "standard",
+        "standard2",
+        "standard3"
+      ],
+      "metadata": {
+        "description": "Azure AI Search SKU."
+      }
+    },
+    "deployCosmos": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Deploy Azure Cosmos DB for NoSQL for agent state and conversation history."
+      }
+    },
+    "deployPostgres": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Deploy Azure Database for PostgreSQL Flexible Server for the relational domain model (with pgvector)."
+      }
+    },
+    "postgresAdminLogin": {
+      "type": "string",
+      "defaultValue": "scoutadmin",
+      "metadata": {
+        "description": "PostgreSQL administrator login name."
+      }
+    },
+    "postgresAdminPassword": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "PostgreSQL administrator password. Required only when PostgreSQL is deployed."
+      }
+    },
+    "deployAiFoundry": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Deploy an Azure AI Foundry (AI Services) account with chat + embedding model deployments for the agent plane."
+      }
+    },
+    "chatModelName": {
+      "type": "string",
+      "defaultValue": "gpt-4o-mini",
+      "metadata": {
+        "description": "Chat/reasoning model to deploy in Azure AI Foundry."
+      }
+    },
+    "chatModelVersion": {
+      "type": "string",
+      "defaultValue": "2024-07-18",
+      "metadata": {
+        "description": "Chat model version."
+      }
+    },
+    "chatModelCapacity": {
+      "type": "int",
+      "defaultValue": 20,
+      "metadata": {
+        "description": "Chat model deployment capacity, in thousands of tokens per minute (TPM)."
+      }
+    },
+    "embeddingModelName": {
+      "type": "string",
+      "defaultValue": "text-embedding-3-large",
+      "metadata": {
+        "description": "Embedding model to deploy in Azure AI Foundry (used for vector search)."
+      }
+    },
+    "embeddingModelVersion": {
+      "type": "string",
+      "defaultValue": "1",
+      "metadata": {
+        "description": "Embedding model version."
+      }
+    },
+    "embeddingModelCapacity": {
+      "type": "int",
+      "defaultValue": 20,
+      "metadata": {
+        "description": "Embedding model deployment capacity, in thousands of tokens per minute (TPM)."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {
+        "solution": "digital-scout",
+        "environment": "poc"
+      },
+      "metadata": {
+        "description": "Tags applied to every resource."
       }
     }
   },
   "variables": {
-    "appServicePlanName": "[concat(parameters('webAppName'), '-plan')]"
+    "suffix": "[toLower(uniqueString(resourceGroup().id))]",
+    "effectiveWebAppName": "[if(empty(parameters('webAppName')), format('{0}-{1}', parameters('namePrefix'), variables('suffix')), parameters('webAppName'))]",
+    "appServicePlanName": "[format('{0}-plan', variables('effectiveWebAppName'))]",
+    "logAnalyticsName": "[format('{0}-logs-{1}', parameters('namePrefix'), variables('suffix'))]",
+    "appInsightsName": "[format('{0}-appi-{1}', parameters('namePrefix'), variables('suffix'))]",
+    "keyVaultName": "[take(format('{0}kv{1}', parameters('namePrefix'), variables('suffix')), 24)]",
+    "storageAccountName": "[take(format('{0}st{1}', parameters('namePrefix'), variables('suffix')), 24)]",
+    "searchServiceName": "[take(format('{0}-search-{1}', parameters('namePrefix'), variables('suffix')), 60)]",
+    "cosmosAccountName": "[take(format('{0}-cosmos-{1}', parameters('namePrefix'), variables('suffix')), 44)]",
+    "aiFoundryName": "[format('{0}-aifoundry-{1}', parameters('namePrefix'), variables('suffix'))]",
+    "postgresServerName": "[format('{0}-pg-{1}', parameters('namePrefix'), variables('suffix'))]",
+    "cosmosDatabaseName": "digitalscout",
+    "cosmosConversationsContainer": "conversations",
+    "postgresDatabaseName": "digitalscout",
+    "documentsContainerName": "documents",
+    "reportsContainerName": "reports",
+    "storageBlobDataContributorRoleId": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
+    "searchIndexDataContributorRoleId": "8ebe5a00-799e-43f5-93ac-243d3dce84a7",
+    "searchServiceContributorRoleId": "7ca78c08-252a-4471-8644-bb5ff32d4ba0",
+    "cognitiveServicesOpenAiUserRoleId": "5e0bd9bd-7b93-4f28-af87-19fc36ad61bd",
+    "cognitiveServicesUserRoleId": "a97b65f3-24c7-4388-baec-2e87135dc908",
+    "keyVaultSecretsUserRoleId": "4633458b-17de-408a-b874-0445c86b69e6",
+    "cosmosDataContributorRoleId": "00000000-0000-0000-0000-000000000002"
   },
   "resources": [
+    {
+      "condition": "[parameters('deployMonitoring')]",
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2023-09-01",
+      "name": "[variables('logAnalyticsName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "sku": {
+          "name": "PerGB2018"
+        },
+        "retentionInDays": 30
+      }
+    },
+    {
+      "condition": "[parameters('deployMonitoring')]",
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[variables('appInsightsName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "WorkspaceResourceId": "[if(parameters('deployMonitoring'), resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName')), null())]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployKeyVault')]",
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2023-07-01",
+      "name": "[variables('keyVaultName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "tenantId": "[subscription().tenantId]",
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "enableRbacAuthorization": true,
+        "enableSoftDelete": true,
+        "softDeleteRetentionInDays": 7,
+        "publicNetworkAccess": "Enabled"
+      }
+    },
+    {
+      "condition": "[parameters('deployStorage')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-05-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "accessTier": "Hot",
+        "allowBlobPublicAccess": false,
+        "allowSharedKeyAccess": false,
+        "minimumTlsVersion": "TLS1_2",
+        "supportsHttpsTrafficOnly": true,
+        "networkAcls": {
+          "defaultAction": "Allow",
+          "bypass": "AzureServices"
+        }
+      }
+    },
+    {
+      "condition": "[parameters('deployStorage')]",
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}', variables('storageAccountName'), 'default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployStorage')]",
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}/{2}', variables('storageAccountName'), 'default', variables('documentsContainerName'))]",
+      "properties": {
+        "publicAccess": "None"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployStorage')]",
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}/{2}', variables('storageAccountName'), 'default', variables('reportsContainerName'))]",
+      "properties": {
+        "publicAccess": "None"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+      ]
+    },
+    {
+      "condition": "[parameters('deploySearch')]",
+      "type": "Microsoft.Search/searchServices",
+      "apiVersion": "2024-06-01-preview",
+      "name": "[variables('searchServiceName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[parameters('searchSku')]"
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "replicaCount": 1,
+        "partitionCount": 1,
+        "hostingMode": "default",
+        "publicNetworkAccess": "enabled",
+        "authOptions": {
+          "aadOrApiKey": {
+            "aadAuthFailureMode": "http401WithBearerChallenge"
+          }
+        },
+        "semanticSearch": "free"
+      }
+    },
+    {
+      "condition": "[parameters('deployCosmos')]",
+      "type": "Microsoft.DocumentDB/databaseAccounts",
+      "apiVersion": "2024-11-15",
+      "name": "[variables('cosmosAccountName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "kind": "GlobalDocumentDB",
+      "properties": {
+        "databaseAccountOfferType": "Standard",
+        "disableLocalAuth": true,
+        "enableAutomaticFailover": false,
+        "consistencyPolicy": {
+          "defaultConsistencyLevel": "Session"
+        },
+        "locations": [
+          {
+            "locationName": "[parameters('location')]",
+            "failoverPriority": 0,
+            "isZoneRedundant": false
+          }
+        ],
+        "capabilities": [
+          {
+            "name": "EnableServerless"
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[parameters('deployCosmos')]",
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+      "apiVersion": "2024-11-15",
+      "name": "[format('{0}/{1}', variables('cosmosAccountName'), variables('cosmosDatabaseName'))]",
+      "properties": {
+        "resource": {
+          "id": "[variables('cosmosDatabaseName')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosAccountName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployCosmos')]",
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2024-11-15",
+      "name": "[format('{0}/{1}/{2}', variables('cosmosAccountName'), variables('cosmosDatabaseName'), variables('cosmosConversationsContainer'))]",
+      "properties": {
+        "resource": {
+          "id": "[variables('cosmosConversationsContainer')]",
+          "partitionKey": {
+            "paths": [
+              "/conversationId"
+            ],
+            "kind": "Hash"
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('cosmosAccountName'), variables('cosmosDatabaseName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployPostgres')]",
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "apiVersion": "2024-08-01",
+      "name": "[variables('postgresServerName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Standard_B1ms",
+        "tier": "Burstable"
+      },
+      "properties": {
+        "version": "16",
+        "administratorLogin": "[parameters('postgresAdminLogin')]",
+        "administratorLoginPassword": "[parameters('postgresAdminPassword')]",
+        "authConfig": {
+          "activeDirectoryAuth": "Enabled",
+          "passwordAuth": "Enabled",
+          "tenantId": "[subscription().tenantId]"
+        },
+        "storage": {
+          "storageSizeGB": 32
+        },
+        "backup": {
+          "backupRetentionDays": 7,
+          "geoRedundantBackup": "Disabled"
+        },
+        "highAvailability": {
+          "mode": "Disabled"
+        }
+      }
+    },
+    {
+      "condition": "[parameters('deployPostgres')]",
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers/configurations",
+      "apiVersion": "2024-08-01",
+      "name": "[format('{0}/{1}', variables('postgresServerName'), 'azure.extensions')]",
+      "properties": {
+        "value": "VECTOR",
+        "source": "user-override"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', variables('postgresServerName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployPostgres')]",
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers/databases",
+      "apiVersion": "2024-08-01",
+      "name": "[format('{0}/{1}', variables('postgresServerName'), variables('postgresDatabaseName'))]",
+      "properties": {
+        "charset": "UTF8",
+        "collation": "en_US.utf8"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', variables('postgresServerName'))]",
+        "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers/configurations', variables('postgresServerName'), 'azure.extensions')]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployPostgres')]",
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules",
+      "apiVersion": "2024-08-01",
+      "name": "[format('{0}/{1}', variables('postgresServerName'), 'AllowAllAzureServices')]",
+      "properties": {
+        "startIpAddress": "0.0.0.0",
+        "endIpAddress": "0.0.0.0"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', variables('postgresServerName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployAiFoundry')]",
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2024-10-01",
+      "name": "[variables('aiFoundryName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "kind": "AIServices",
+      "sku": {
+        "name": "S0"
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "customSubDomainName": "[variables('aiFoundryName')]",
+        "publicNetworkAccess": "Enabled",
+        "disableLocalAuth": true
+      }
+    },
+    {
+      "condition": "[parameters('deployAiFoundry')]",
+      "type": "Microsoft.CognitiveServices/accounts/deployments",
+      "apiVersion": "2024-10-01",
+      "name": "[format('{0}/{1}', variables('aiFoundryName'), parameters('chatModelName'))]",
+      "sku": {
+        "name": "GlobalStandard",
+        "capacity": "[parameters('chatModelCapacity')]"
+      },
+      "properties": {
+        "model": {
+          "format": "OpenAI",
+          "name": "[parameters('chatModelName')]",
+          "version": "[parameters('chatModelVersion')]"
+        },
+        "versionUpgradeOption": "NoAutoUpgrade"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployAiFoundry')]",
+      "type": "Microsoft.CognitiveServices/accounts/deployments",
+      "apiVersion": "2024-10-01",
+      "name": "[format('{0}/{1}', variables('aiFoundryName'), parameters('embeddingModelName'))]",
+      "sku": {
+        "name": "Standard",
+        "capacity": "[parameters('embeddingModelCapacity')]"
+      },
+      "properties": {
+        "model": {
+          "format": "OpenAI",
+          "name": "[parameters('embeddingModelName')]",
+          "version": "[parameters('embeddingModelVersion')]"
+        },
+        "versionUpgradeOption": "NoAutoUpgrade"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]",
+        "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('aiFoundryName'), parameters('chatModelName'))]"
+      ]
+    },
     {
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2023-12-01",
       "name": "[variables('appServicePlanName')]",
       "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
       "sku": {
-        "name": "[parameters('sku')]"
+        "name": "[parameters('appServiceSku')]"
       },
       "kind": "linux",
       "properties": {
@@ -55,12 +558,13 @@
     {
       "type": "Microsoft.Web/sites",
       "apiVersion": "2023-12-01",
-      "name": "[parameters('webAppName')]",
+      "name": "[variables('effectiveWebAppName')]",
       "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
       "kind": "app,linux",
-      "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
-      ],
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "properties": {
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
         "httpsOnly": true,
@@ -71,36 +575,247 @@
           "ftpsState": "Disabled",
           "minTlsVersion": "1.2",
           "http20Enabled": true,
-          "appSettings": [
-            {
-              "name": "WEBSITE_RUN_FROM_PACKAGE",
-              "value": "[parameters('packageUrl')]"
-            },
-            {
-              "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
-              "value": "false"
-            },
-            {
-              "name": "WEBSITE_NODE_DEFAULT_VERSION",
-              "value": "~22"
-            },
-            {
-              "name": "NODE_ENV",
-              "value": "production"
-            }
-          ]
+          "appSettings": "[concat(createArray(createObject('name', 'WEBSITE_RUN_FROM_PACKAGE', 'value', parameters('packageUrl')), createObject('name', 'SCM_DO_BUILD_DURING_DEPLOYMENT', 'value', 'false'), createObject('name', 'WEBSITE_NODE_DEFAULT_VERSION', 'value', '~22'), createObject('name', 'NODE_ENV', 'value', 'production')), if(parameters('deployMonitoring'), createArray(createObject('name', 'APPLICATIONINSIGHTS_CONNECTION_STRING', 'value', reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2020-02-02').ConnectionString)), createArray()), if(parameters('deployStorage'), createArray(createObject('name', 'AZURE_STORAGE_BLOB_ENDPOINT', 'value', reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-05-01').primaryEndpoints.blob), createObject('name', 'AZURE_STORAGE_DOCUMENTS_CONTAINER', 'value', variables('documentsContainerName'))), createArray()), if(parameters('deployKeyVault'), createArray(createObject('name', 'AZURE_KEYVAULT_URI', 'value', reference(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '2023-07-01').vaultUri)), createArray()), if(parameters('deploySearch'), createArray(createObject('name', 'AZURE_SEARCH_ENDPOINT', 'value', format('https://{0}.search.windows.net', variables('searchServiceName')))), createArray()), if(parameters('deployCosmos'), createArray(createObject('name', 'AZURE_COSMOS_ENDPOINT', 'value', reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosAccountName')), '2024-11-15').documentEndpoint), createObject('name', 'AZURE_COSMOS_DATABASE', 'value', variables('cosmosDatabaseName'))), createArray()), if(parameters('deployPostgres'), createArray(createObject('name', 'POSTGRES_HOST', 'value', reference(resourceId('Microsoft.DBforPostgreSQL/flexibleServers', variables('postgresServerName')), '2024-08-01').fullyQualifiedDomainName), createObject('name', 'POSTGRES_DATABASE', 'value', variables('postgresDatabaseName')), createObject('name', 'POSTGRES_USER', 'value', parameters('postgresAdminLogin'))), createArray()), if(parameters('deployAiFoundry'), createArray(createObject('name', 'AZURE_AI_FOUNDRY_ENDPOINT', 'value', reference(resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName')), '2024-10-01').endpoint), createObject('name', 'AZURE_OPENAI_ENDPOINT', 'value', reference(resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName')), '2024-10-01').endpoint), createObject('name', 'AZURE_OPENAI_CHAT_DEPLOYMENT', 'value', parameters('chatModelName')), createObject('name', 'AZURE_OPENAI_EMBEDDING_DEPLOYMENT', 'value', parameters('embeddingModelName'))), createArray()))]"
         }
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]",
+        "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosAccountName'))]",
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+        "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', variables('postgresServerName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployStorage')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+      "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), variables('storageBlobDataContributorRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), '2023-12-01', 'full').identity.principalId]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('effectiveWebAppName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deploySearch')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]",
+      "name": "[guid(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), variables('searchIndexDataContributorRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('searchIndexDataContributorRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), '2023-12-01', 'full').identity.principalId]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('effectiveWebAppName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deploySearch')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]",
+      "name": "[guid(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), variables('searchServiceContributorRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('searchServiceContributorRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), '2023-12-01', 'full').identity.principalId]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('effectiveWebAppName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployKeyVault')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+      "name": "[guid(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), variables('keyVaultSecretsUserRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('keyVaultSecretsUserRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), '2023-12-01', 'full').identity.principalId]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('effectiveWebAppName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployAiFoundry')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]",
+      "name": "[guid(resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName')), resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), variables('cognitiveServicesOpenAiUserRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('cognitiveServicesOpenAiUserRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), '2023-12-01', 'full').identity.principalId]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('effectiveWebAppName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployAiFoundry')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]",
+      "name": "[guid(resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName')), resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), variables('cognitiveServicesUserRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('cognitiveServicesUserRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), '2023-12-01', 'full').identity.principalId]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('effectiveWebAppName'))]"
+      ]
+    },
+    {
+      "condition": "[and(parameters('deploySearch'), parameters('deployAiFoundry'))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]",
+      "name": "[guid(resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName')), resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), variables('cognitiveServicesOpenAiUserRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('cognitiveServicesOpenAiUserRoleId'))]",
+        "principalId": "[if(parameters('deploySearch'), reference(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2024-06-01-preview', 'full').identity.principalId, '')]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]",
+        "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
+      ]
+    },
+    {
+      "condition": "[and(parameters('deploySearch'), parameters('deployStorage'))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+      "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), variables('storageBlobDataContributorRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleId'))]",
+        "principalId": "[if(parameters('deploySearch'), reference(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2024-06-01-preview', 'full').identity.principalId, '')]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployCosmos')]",
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+      "apiVersion": "2024-11-15",
+      "name": "[format('{0}/{1}', variables('cosmosAccountName'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosAccountName')), resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), variables('cosmosDataContributorRoleId')))]",
+      "properties": {
+        "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', variables('cosmosAccountName'), variables('cosmosDataContributorRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), '2023-12-01', 'full').identity.principalId]",
+        "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosAccountName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosAccountName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('effectiveWebAppName'))]"
+      ]
     }
   ],
   "outputs": {
     "webAppName": {
       "type": "string",
-      "value": "[parameters('webAppName')]"
+      "metadata": {
+        "description": "Name of the deployed web app."
+      },
+      "value": "[variables('effectiveWebAppName')]"
     },
     "webAppUrl": {
       "type": "string",
-      "value": "[concat('https://', reference(resourceId('Microsoft.Web/sites', parameters('webAppName'))).defaultHostName)]"
+      "metadata": {
+        "description": "Public URL of the web app."
+      },
+      "value": "[format('https://{0}', reference(resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), '2023-12-01').defaultHostName)]"
+    },
+    "webAppPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Principal (object) id of the web app managed identity."
+      },
+      "value": "[reference(resourceId('Microsoft.Web/sites', variables('effectiveWebAppName')), '2023-12-01', 'full').identity.principalId]"
+    },
+    "appInsightsConnectionString": {
+      "type": "string",
+      "metadata": {
+        "description": "Application Insights connection string (empty when monitoring is disabled)."
+      },
+      "value": "[if(parameters('deployMonitoring'), reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2020-02-02').ConnectionString, 'not-deployed')]"
+    },
+    "keyVaultUri": {
+      "type": "string",
+      "metadata": {
+        "description": "Key Vault URI (empty when Key Vault is disabled)."
+      },
+      "value": "[if(parameters('deployKeyVault'), reference(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '2023-07-01').vaultUri, 'not-deployed')]"
+    },
+    "storageBlobEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Blob endpoint of the documents storage account."
+      },
+      "value": "[if(parameters('deployStorage'), reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-05-01').primaryEndpoints.blob, 'not-deployed')]"
+    },
+    "searchEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure AI Search endpoint."
+      },
+      "value": "[if(parameters('deploySearch'), format('https://{0}.search.windows.net', variables('searchServiceName')), 'not-deployed')]"
+    },
+    "cosmosEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Cosmos DB document endpoint."
+      },
+      "value": "[if(parameters('deployCosmos'), reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosAccountName')), '2024-11-15').documentEndpoint, 'not-deployed')]"
+    },
+    "postgresHost": {
+      "type": "string",
+      "metadata": {
+        "description": "PostgreSQL fully qualified domain name."
+      },
+      "value": "[if(parameters('deployPostgres'), reference(resourceId('Microsoft.DBforPostgreSQL/flexibleServers', variables('postgresServerName')), '2024-08-01').fullyQualifiedDomainName, 'not-deployed')]"
+    },
+    "aiFoundryEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure AI Foundry (AI Services) endpoint."
+      },
+      "value": "[if(parameters('deployAiFoundry'), reference(resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName')), '2024-10-01').endpoint, 'not-deployed')]"
+    },
+    "chatDeploymentName": {
+      "type": "string",
+      "metadata": {
+        "description": "Deployed chat model deployment name."
+      },
+      "value": "[if(parameters('deployAiFoundry'), parameters('chatModelName'), 'not-deployed')]"
+    },
+    "embeddingDeploymentName": {
+      "type": "string",
+      "metadata": {
+        "description": "Deployed embedding model deployment name."
+      },
+      "value": "[if(parameters('deployAiFoundry'), parameters('embeddingModelName'), 'not-deployed')]"
     }
   }
 }
