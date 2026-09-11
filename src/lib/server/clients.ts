@@ -31,11 +31,14 @@ export function getOpenAiClient(): AzureOpenAI {
   }
   if (!openAiClient) {
     const tokenProvider = getBearerTokenProvider(getCredential(), COGNITIVE_SERVICES_SCOPE);
+    // Note: do NOT pin `deployment` on the client. When set, the SDK forces
+    // every deployment-scoped call (chat AND embeddings) onto that one
+    // deployment. Leaving it unset lets each request's `model` field select the
+    // correct deployment (chat vs embedding) in the request path.
     openAiClient = new AzureOpenAI({
       endpoint: openAiConfig.endpoint,
       azureADTokenProvider: tokenProvider,
       apiVersion: openAiConfig.apiVersion,
-      deployment: openAiConfig.chatDeployment,
     });
   }
   return openAiClient;
