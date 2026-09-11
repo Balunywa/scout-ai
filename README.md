@@ -59,27 +59,36 @@ Digital Scout addresses that gap by making organizational technology knowledge c
 
 ## Azure-Native Architecture
 
-Digital Scout is designed to run on Microsoft Azure and integrate with the customer's existing Microsoft data and collaboration estate. The design is an **identity-gated, agentic RAG** system organized into three planes: an **Application & Agent Plane** for the live experience and operational data, a **Knowledge Plane (Foundry IQ)** for permission-aware document retrieval with citations, and an **Intelligence Plane (Fabric IQ)** for business context, semantics, and analytics. External systems are reached through an **MCP toolbox**.
+**In one sentence:** a user asks a question in plain language, an AI agent decides where to look, and it answers **only from information that user is allowed to see** — every answer backed by citations.
 
-> **Current state vs. target.** The diagram below is the **target architecture**. The code in this repository is a **Phase-0 prototype** that validates the user experience: data is seeded in-memory, agent responses are scripted, and no Azure services are wired yet. Items marked *(preview)* are not yet generally available.
+Digital Scout runs entirely on Microsoft Azure and plugs into the Microsoft data you already have (SharePoint, OneDrive, databases, Microsoft Fabric). The design keeps the user's identity attached end-to-end, so security and permissions are enforced by your existing Microsoft systems — Digital Scout never becomes a way to see data you couldn't see otherwise.
+
+> **How to read the diagram.** The work is split into three **planes** (think of them as "departments," each responsible for one kind of answer) plus a **toolbox** for reaching outside systems. The numbered arrows in the diagram follow a single question from sign-in to answer.
+
+> **Current state vs. target.** The diagram is the **target architecture**. The code in this repository is a **Phase-0 prototype** that proves out the user experience: data is seeded in-memory, agent responses are scripted, and no Azure services are wired up yet. Items marked *(preview)* are not yet generally available in Azure.
 
 ![Digital Scout Azure-native logical architecture](docs/images/azure-architecture.png)
 
-### Planes
+### The three planes (what each part is for)
 
-- **Application & Agent Plane** — the React web app on **Azure App Service** sends user questions to the **Azure AI Foundry Agent Service**, which handles orchestration, reasoning, tool selection, and planning. **Azure Cosmos DB** holds conversation/session state; a **Domain API** over **Azure Database for PostgreSQL (Flexible Server)** holds the operational domain model (needs, companies, evaluations, projects).
-- **Knowledge Plane · Foundry IQ** — when a question needs document knowledge, the agent queries the **Foundry IQ knowledge base**, which retrieves over **Azure AI Search** (hybrid + vector) across sources (Blob, SharePoint, OneDrive, approved Web). Retrieval is **permission-aware** via Entra ID + source ACLs + **Microsoft Purview** (sensitivity labels, lineage, governance).
-- **Intelligence Plane · Fabric IQ** *(preview)* — for business context the agent uses a **Microsoft Fabric data agent** as a native tool over **OneLake**, reasoning with an ontology, semantic model, and graph. Integration uses **identity passthrough (On-Behalf-Of)**, so Fabric runs queries as the signed-in user and enforces row/column-level security. **Azure Database for PostgreSQL is mirrored into OneLake via Fabric Mirroring (zero-ETL)** *(preview)*.
-- **Agent Toolbox · MCP** — for vendor APIs, internal APIs, and ITSM/workflow systems, the agent calls an **MCP server** over the Model Context Protocol — a path distinct from the Fabric data tool.
+- **Application & Agent Plane — "the front door and the brain."** The React web app runs on **Azure App Service**. Every question goes to the **Azure AI Foundry Agent Service**, which is the reasoning engine: it plans, decides which sources to use, and calls the right tools. Two operational stores sit here: **Azure Cosmos DB** keeps the running conversation (chat history/state), and **Azure Database for PostgreSQL (Flexible Server)** — reached through a **Domain API** — holds the structured business records (needs, companies, evaluations, projects).
 
-### Request flow
+- **Knowledge Plane — "find it in the documents."** When a question needs answers from documents, the agent asks **Foundry IQ** *(preview)*, Azure's managed knowledge/retrieval layer. It searches with **Azure AI Search** (combining keyword + meaning-based "vector" search) across your content — Blob storage, SharePoint, OneDrive, and approved web sources. Results are **permission-trimmed**: the search only returns files that the signed-in user already has access to, using Entra ID sign-in, each source's own access lists (ACLs), and **Microsoft Purview** for sensitivity labels and governance.
 
-1. User signs in with **Microsoft Entra ID** (SSO, Conditional Access); identity is propagated downstream (delegated / OBO where supported).
-2. The web app forwards the question to the **Foundry Agent**, which decides which sources to use.
-3. Chat state is read/written in **Cosmos DB**; domain data is read/written via the **Domain API → PostgreSQL**.
-4. Document questions → **Foundry IQ → Azure AI Search → sources** (permission-trimmed, with citations).
-5. Business questions → **Fabric data agent → OneLake** under the user's identity.
-6. External actions → **MCP toolbox**. The agent returns a grounded answer with citations to the web app.
+- **Intelligence Plane — "answer from the business data."** For questions about numbers, trends, and relationships, the agent uses a **Microsoft Fabric data agent** *(preview)* — attached as a built-in Foundry tool — to reason over your analytics data in **OneLake**. It runs **as the signed-in user** (identity passthrough, also called *On-Behalf-Of / OBO*), so Fabric's own row- and column-level security still applies. Your PostgreSQL business data is copied into OneLake automatically with **Fabric Mirroring (zero-ETL)** *(preview)* — no separate pipelines to build.
+
+- **Agent Toolbox (MCP) — "reach outside systems."** To pull from vendor APIs, internal APIs, or ITSM/workflow tools, the agent calls an **MCP server** (Model Context Protocol, an open standard for connecting AI agents to external tools). This is a separate path from the Fabric data tool above.
+
+### How one question flows (matches the numbered arrows)
+
+1. **Sign in.** The user authenticates with **Microsoft Entra ID** (single sign-on, Conditional Access). That identity travels with the request the whole way.
+2. **Ask.** The web app hands the question to the **Foundry Agent**, which decides which source(s) can answer it.
+3. **Conversation + records.** The agent reads/writes chat state in **Cosmos DB** and business records via the **Domain API → PostgreSQL**.
+4. **Document questions →** **Foundry IQ → Azure AI Search → your sources**, returning only permitted results, with citations.
+5. **Business/analytics questions →** **Fabric data agent → OneLake**, running under the user's own identity.
+6. **External actions →** the **MCP toolbox**. The agent then returns one grounded answer, with citations, back to the web app.
+
+**Why this matters to you:** you keep your data in your own Azure tenant, existing permissions are honored automatically, every answer is traceable to a source, and the preview services can be switched on as they reach general availability without redesigning the architecture.
 
 ---
 
@@ -531,7 +540,7 @@ The primary cost drivers are typically:
 
 - Azure AI Foundry model/token usage
 - Azure AI Search tier and index size
-- Application/API compute
+- Azure App Service compute
 - Azure Database for PostgreSQL compute and storage
 - Blob / ADLS document storage
 - Logging and monitoring volume
@@ -557,32 +566,6 @@ Recommended controls include:
 - Application and AI telemetry through Azure Monitor / Application Insights
 - Customer-owned Azure resources and data
 - Auditability for evaluations and recommendations
-
----
-
-## Example Technology Domains
-
-The platform can support technology discovery across domains such as:
-
-- Chemicals
-- Materials and coatings
-- Sensors
-- Electronics
-- Water treatment
-- Power systems
-- Energy storage
-- Robotics
-- Industrial automation
-- AI / ML
-- Computer vision
-- Inspection technologies
-- Carbon management
-- Reliability technologies
-- Advanced manufacturing
-- Engineering software
-- Scientific technologies
-
-These are examples, not hardcoded categories.
 
 ---
 
