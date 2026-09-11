@@ -374,8 +374,7 @@ The accelerator is designed around Azure services that can be replaced or extend
 | Operational-to-analytics replication | Fabric Mirroring for PostgreSQL (zero-ETL) *(preview)* |
 | External tools and enterprise systems | MCP server (Model Context Protocol) |
 | Documents and reports | Azure Blob Storage / SharePoint / OneDrive |
-| APIs / application backend | Azure Container Apps and/or Azure Functions |
-| Asynchronous workflows | Azure Service Bus / Event Grid |
+| Web application hosting | Azure App Service (Linux, Node 22 LTS) |
 | Secrets and keys | Azure Key Vault |
 | Monitoring and telemetry | Azure Monitor / Application Insights |
 | Data governance and compliance | Microsoft Purview |
