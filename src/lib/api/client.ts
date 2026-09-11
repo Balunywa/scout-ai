@@ -50,6 +50,8 @@ import type {
 } from "../data/types";
 import { askScout as askScoutServerFn, summarizeSearch } from "../server/agent";
 import type { ChatTurn, GroundingHit } from "../server/agent";
+import { reindex, runSearch } from "../server/search";
+import { fetchNeed, fetchNeeds, findSimilarNeeds, syncNeeds } from "../server/db";
 
 export const API_BASE_URL = (import.meta.env["VITE_DIGITAL_SCOUT_API_URL"] as string) ?? "/api";
 export const USING_MOCK_ADAPTER = !import.meta.env["VITE_DIGITAL_SCOUT_API_URL"];
@@ -79,10 +81,21 @@ export const isStale = (need: TechnologyNeed) =>
   daysSince(need.lastActivityAt) >= STALE_THRESHOLD_DAYS &&
   !["Closed", "Archived"].includes(need.status);
 
+/** Base needs corpus — Postgres when configured, in-memory seed otherwise. */
+async function needsSource(): Promise<TechnologyNeed[]> {
+  try {
+    const r = await fetchNeeds();
+    if (r.configured && r.needs && r.needs.length) return r.needs;
+  } catch {
+    // fall through to seed
+  }
+  return needs;
+}
+
 export async function listNeeds(filters: NeedFilters = {}): Promise<TechnologyNeed[]> {
-  await latency(80);
+  const base = await needsSource();
   const q = filters.q?.toLowerCase().trim();
-  return needs.filter((n) => {
+  return base.filter((n) => {
     if (q) {
       const hay = [n.title, n.ref, n.problemStatement, ...n.keywords, n.category, n.psl]
         .join(" ")
@@ -102,7 +115,12 @@ export async function listNeeds(filters: NeedFilters = {}): Promise<TechnologyNe
 }
 
 export async function getNeed(id: string): Promise<TechnologyNeed | undefined> {
-  await latency(60);
+  try {
+    const r = await fetchNeed({ data: { id } });
+    if (r.configured) return r.need ?? undefined;
+  } catch {
+    // fall through to seed
+  }
   return needs.find((n) => n.id === id);
 }
 
@@ -248,9 +266,8 @@ function score(text: string, tokens: string[]): number {
   return tokens.reduce((acc, t) => (hay.includes(t) ? acc + 1 : acc), 0);
 }
 
-/** Mock of the Azure AI Search semantic + vector query. */
-export async function search(query: string): Promise<SearchResponse> {
-  await latency(260);
+/** Seed-based retrieval used as the fallback when Azure AI Search is off. */
+function seedSearchHits(query: string): SearchHit[] {
   const tokens = tokenise(query);
   const hits: SearchHit[] = [];
 
@@ -344,7 +361,18 @@ export async function search(query: string): Promise<SearchResponse> {
   }
 
   hits.sort((a, b) => b.score - a.score);
-  const top = hits.slice(0, 40);
+  return hits.slice(0, 40);
+}
+
+/** Knowledge search: Azure AI Search when configured, seed retrieval otherwise. */
+export async function search(query: string): Promise<SearchResponse> {
+  let top: SearchHit[];
+  try {
+    const azure = await runSearch({ data: { query } });
+    top = azure.configured && azure.hits ? azure.hits : seedSearchHits(query);
+  } catch {
+    top = seedSearchHits(query);
+  }
 
   const needCount = top.filter((h) => h.type === "need").length;
   const evalCount = top.filter((h) => h.type === "evaluation").length;
@@ -419,6 +447,39 @@ export async function askScout(
     grounded: false,
   };
 }
+
+/* ------------------------------------------------------- platform ops */
+
+export type ChatMessage = ChatTurn;
+
+/** Similar needs via pgvector semantic search; empty when Postgres/embeddings are off. */
+export async function relatedNeedsSemantic(needId: string): Promise<TechnologyNeed[]> {
+  try {
+    const r = await findSimilarNeeds({ data: { needId } });
+    if (r.configured && r.needs) return r.needs;
+  } catch {
+    // Postgres/pgvector not configured.
+  }
+  return [];
+}
+
+export interface PlatformSyncResult {
+  search: { configured: boolean; indexed?: number; vectors?: boolean; error?: string };
+  postgres: { configured: boolean; rows?: number; vectors?: boolean; error?: string };
+}
+
+/**
+ * Admin action: build the Azure AI Search index and load the needs table.
+ * No-ops (reports `configured: false`) for any plane that isn't provisioned.
+ */
+export async function syncPlatformData(): Promise<PlatformSyncResult> {
+  const [searchResult, postgresResult] = await Promise.all([
+    reindex().catch(() => ({ configured: false as const })),
+    syncNeeds().catch(() => ({ configured: false as const })),
+  ]);
+  return { search: searchResult, postgres: postgresResult };
+}
+
 
 /* ---------------------------------------------- recommendation engine */
 

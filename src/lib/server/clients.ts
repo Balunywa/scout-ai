@@ -12,13 +12,14 @@
 import { DefaultAzureCredential, getBearerTokenProvider } from "@azure/identity";
 import { AzureOpenAI } from "openai";
 import { CosmosClient, type Container } from "@azure/cosmos";
+import { SearchClient, SearchIndexClient } from "@azure/search-documents";
 
-import { cosmosConfig, openAiConfig } from "./config";
+import { cosmosConfig, openAiConfig, searchConfig } from "./config";
 
 const COGNITIVE_SERVICES_SCOPE = "https://cognitiveservices.azure.com/.default";
 
 let credential: DefaultAzureCredential | undefined;
-function getCredential(): DefaultAzureCredential {
+export function getCredential(): DefaultAzureCredential {
   credential ??= new DefaultAzureCredential();
   return credential;
 }
@@ -53,4 +54,16 @@ export function getConversationsContainer(): Container | undefined {
       .container(cosmosConfig.conversationsContainer);
   }
   return cosmosContainer;
+}
+
+/** Data-plane client for querying / uploading documents to the Digital Scout index. */
+export function getSearchClient<T extends object>(): SearchClient<T> | undefined {
+  if (!searchConfig) return undefined;
+  return new SearchClient<T>(searchConfig.endpoint, searchConfig.indexName, getCredential());
+}
+
+/** Control-plane client for creating / updating the index definition. */
+export function getSearchIndexClient(): SearchIndexClient | undefined {
+  if (!searchConfig) return undefined;
+  return new SearchIndexClient(searchConfig.endpoint, getCredential());
 }

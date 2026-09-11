@@ -20,7 +20,8 @@ const env = (key: string): string | undefined => {
 export interface OpenAiConfig {
   endpoint: string;
   chatDeployment: string;
-  embeddingDeployment?: string;
+  embeddingDeployment?: string | undefined;
+  embeddingDimensions: number;
   apiVersion: string;
 }
 
@@ -38,6 +39,7 @@ export const openAiConfig: OpenAiConfig | undefined = (() => {
     endpoint,
     chatDeployment,
     embeddingDeployment: env("AZURE_OPENAI_EMBEDDING_DEPLOYMENT"),
+    embeddingDimensions: Number(env("AZURE_OPENAI_EMBEDDING_DIMENSIONS") ?? "1536"),
     apiVersion: env("AZURE_OPENAI_API_VERSION") ?? "2024-10-21",
   };
 })();
@@ -74,3 +76,7 @@ export const postgresConfig = (() => {
 
 export const isOpenAiConfigured = () => openAiConfig !== undefined;
 export const isCosmosConfigured = () => cosmosConfig !== undefined;
+export const isSearchConfigured = () => searchConfig !== undefined;
+export const isEmbeddingConfigured = () =>
+  openAiConfig !== undefined && openAiConfig.embeddingDeployment !== undefined;
+export const isPostgresConfigured = () => postgresConfig !== undefined;

@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Cloud, Database, ShieldCheck, Users } from "lucide-react";
+import { Cloud, Database, RefreshCw, ShieldCheck, Users } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import { PageHeader, SectionHeader, StatusPill, Tag } from "@/components/scout/primitives";
-import { allPeople } from "@/lib/api/client";
+import { Button } from "@/components/ui/button";
+import { allPeople, syncPlatformData } from "@/lib/api/client";
 import { USING_MOCK_ADAPTER } from "@/lib/api/client";
 
 export const Route = createFileRoute("/admin")({
@@ -93,6 +96,7 @@ function AdminPage() {
                 </div>
               ))}
             </div>
+            <ProvisionDataPlanes />
           </section>
 
           <section>
@@ -155,6 +159,58 @@ function AdminPage() {
           Data adapter: {USING_MOCK_ADAPTER ? "demo dataset (no live Azure services connected)" : "live API"}
         </p>
       </section>
+    </div>
+  );
+}
+
+function ProvisionDataPlanes() {
+  const [running, setRunning] = useState(false);
+
+  async function run() {
+    setRunning(true);
+    try {
+      const result = await syncPlatformData();
+      const parts: string[] = [];
+      if (result.search.configured) {
+        parts.push(
+          result.search.error
+            ? `Search: ${result.search.error}`
+            : `Search index: ${result.search.indexed ?? 0} docs${result.search.vectors ? " (vectorised)" : ""}`,
+        );
+      }
+      if (result.postgres.configured) {
+        parts.push(
+          result.postgres.error
+            ? `Postgres: ${result.postgres.error}`
+            : `Postgres: ${result.postgres.rows ?? 0} needs${result.postgres.vectors ? " (pgvector)" : ""}`,
+        );
+      }
+      if (parts.length === 0) {
+        toast.info("No live data planes are configured", {
+          description: "Deploy the Azure infrastructure and set the app settings to enable ingestion.",
+        });
+      } else {
+        toast.success("Data planes synchronised", { description: parts.join(" · ") });
+      }
+    } catch {
+      toast.error("Provisioning failed", { description: "Check the server logs for details." });
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  return (
+    <div className="mt-3 flex items-center justify-between gap-3 rounded-md border border-border bg-surface px-4 py-3">
+      <div className="min-w-0">
+        <p className="text-[12.5px] font-medium text-foreground">Provision data planes</p>
+        <p className="text-[11.5px] leading-relaxed text-muted-foreground">
+          Build the Azure AI Search index and load the needs table (pgvector). Safe to re-run.
+        </p>
+      </div>
+      <Button size="sm" variant="outline" className="shrink-0 gap-2" disabled={running} onClick={run}>
+        <RefreshCw className={`size-4 ${running ? "animate-spin" : ""}`} />
+        {running ? "Syncing…" : "Sync now"}
+      </Button>
     </div>
   );
 }

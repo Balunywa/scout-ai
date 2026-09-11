@@ -80,7 +80,12 @@ export const summarizeSearch = createServerFn({ method: "POST" })
  */
 export const askScout = createServerFn({ method: "POST" })
   .validator(
-    (data: { query: string; hits: GroundingHit[]; history?: ChatTurn[]; conversationId?: string }) => data,
+    (data: {
+      query: string;
+      hits: GroundingHit[];
+      history?: ChatTurn[] | undefined;
+      conversationId?: string | undefined;
+    }) => data,
   )
   .handler(
     async ({

@@ -31,6 +31,7 @@ import {
   getJourney,
   getRecommendations,
   isStale,
+  relatedNeedsSemantic,
   syncCompany,
   syncEvaluation,
   syncNeed,
@@ -61,6 +62,10 @@ function NeedDetail() {
   const { data: matches = [] } = useQuery({
     queryKey: ["recommendations", needId],
     queryFn: () => getRecommendations(needId),
+  });
+  const { data: similarNeeds = [] } = useQuery({
+    queryKey: ["similar-needs", needId],
+    queryFn: () => relatedNeedsSemantic(needId),
   });
   const journey = getJourney(needId);
   const timeline = allActivity.filter(
@@ -476,6 +481,30 @@ function NeedDetail() {
               )}
             </div>
           </section>
+
+          {similarNeeds.length ? (
+            <section>
+              <SectionHeader title="Similar needs (semantic)" description="Ranked by pgvector similarity." />
+              <div className="panel divide-y divide-border">
+                {similarNeeds.map((r) => (
+                  <Link
+                    key={r.id}
+                    to="/needs/$needId"
+                    params={{ needId: r.id }}
+                    className="flex gap-2.5 px-4 py-3 transition-colors hover:bg-muted/60"
+                  >
+                    <Target className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+                    <div className="min-w-0">
+                      <p className="text-[12.5px] font-medium leading-snug text-foreground">{r.title}</p>
+                      <p className="text-[11.5px] text-muted-foreground">
+                        {r.ref} · {r.status}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {need.projectIds.length ? (
             <section>
