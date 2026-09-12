@@ -135,14 +135,14 @@
     },
     "chatModelName": {
       "type": "string",
-      "defaultValue": "gpt-4o-mini",
+      "defaultValue": "gpt-4.1-mini",
       "metadata": {
         "description": "Chat/reasoning model to deploy in Azure AI Foundry."
       }
     },
     "chatModelVersion": {
       "type": "string",
-      "defaultValue": "2024-07-18",
+      "defaultValue": "2025-04-14",
       "metadata": {
         "description": "Chat model version."
       }
