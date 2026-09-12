@@ -14,7 +14,7 @@ The platform then helps define the need, finds relevant internal knowledge, iden
 
 ## Deploy the web app to Azure
 
-Deploy the Digital Scout web app directly into your own Azure subscription. This one-click deployment provisions an **Azure App Service (Linux, Node 22 LTS)** and runs a prebuilt, self-contained package — no build runs in Azure.
+Deploy the Digital Scout web app directly into your own Azure subscription. This one-click deployment provisions an **Azure App Service (Linux, Node 22 LTS)** and runs a prebuilt, self-contained package — no build runs in Azure. The same template can optionally provision the full backing platform (Azure AI Foundry, Azure AI Search, Cosmos DB, PostgreSQL Flexible Server with pgvector, Blob Storage, Key Vault, and monitoring) via feature flags, all wired to the app with keyless managed-identity RBAC.
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBalunywa%2Fscout-ai%2Fmain%2Fdeploy%2Fazure%2Fazuredeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FBalunywa%2Fscout-ai%2Fmain%2Fdeploy%2Fazure%2FcreateUiDefinition.json)
 
@@ -25,7 +25,7 @@ Deploy the Digital Scout web app directly into your own Azure subscription. This
 
 After deployment completes, open the `webAppUrl` shown in the deployment outputs to reach the running app at `https://<web-app-name>.azurewebsites.net`.
 
-> **Scope:** This deploys the web application only. The backing Azure AI, data, and search services described later in this document are provisioned separately per customer environment.
+> **Scope:** By default the template deploys the web application and lets you switch on each backing plane (AI Foundry, AI Search, Cosmos DB, PostgreSQL + pgvector, Storage, Key Vault, monitoring) with a checkbox. When a plane is enabled its endpoint is injected as an app setting and the app uses it automatically; when it is left off, the app runs on its built-in demo dataset. After deploying the data planes, open **Administration → Provision data planes → Sync now** to build the search index and load the needs table.
 
 ---
 
@@ -65,7 +65,7 @@ Digital Scout runs entirely on Microsoft Azure and plugs into the Microsoft data
 
 > **How to read the diagram.** The work is split into three **planes** (think of them as "departments," each responsible for one kind of answer) plus a **toolbox** for reaching outside systems. The numbered arrows in the diagram follow a single question from sign-in to answer.
 
-> **Current state vs. target.** The diagram is the **target architecture**. The code in this repository is a **Phase-0 prototype** that proves out the user experience: data is seeded in-memory, agent responses are scripted, and no Azure services are wired up yet. Items marked *(preview)* are not yet generally available in Azure.
+> **Current state vs. target.** The diagram is the **target architecture**. The code in this repository wires the request-path features to real Azure services when they are configured, and falls back to a built-in demo dataset otherwise. Wired today: **Azure AI Foundry** grounds the knowledge-search summary and the *Ask Digital Scout* agent; **Azure AI Search** serves the hybrid keyword+vector knowledge index (with an idempotent ingestion job); **Azure Cosmos DB** persists agent conversations; **Azure Database for PostgreSQL + pgvector** stores the needs corpus and powers semantic "similar needs." Retrieval falls back to in-memory seed search, and the scripted need-definition flow remains as the offline demo. Foundry IQ, Purview permission-trimming, Fabric, and items marked *(preview)* are target-state seams, not yet wired.
 
 ![Digital Scout Azure-native logical architecture](docs/images/azure-architecture.png)
 

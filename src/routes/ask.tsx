@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { AiBadge, OriginBadge, Tag, WhyThis } from "@/components/scout/primitives";
-import { createNeed, syncCompany, syncNeed, syncReport } from "@/lib/api/client";
+import { askScout, createNeed, syncCompany, syncNeed, syncReport } from "@/lib/api/client";
 
 export const Route = createFileRoute("/ask")({
   validateSearch: (s: Record<string, unknown>): { q: string } => ({
@@ -57,6 +57,7 @@ interface Message {
   cards?: Card[];
   gaps?: string[];
   suggestions?: string[];
+  citations?: { label: string; href: string }[];
 }
 
 interface Draft {
@@ -187,6 +188,7 @@ function AskPage() {
   const [creating, setCreating] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const started = useRef(false);
+  const conversationId = useRef(`conv-${Date.now()}`);
 
   useEffect(() => {
     if (started.current || !q) return;
@@ -205,23 +207,50 @@ function AskPage() {
     setInput("");
     setMessages((m) => [...m, { id: `u-${Date.now()}`, role: "user", text: value }]);
     setThinking(true);
-    const step = TURNS[Math.min(turn, TURNS.length - 1)]!;
-    window.setTimeout(() => {
-      setThinking(false);
-      setMessages((m) => [
-        ...m,
-        {
-          id: `a-${Date.now()}`,
-          role: "agent",
-          agent: step.agent,
-          text: step.text,
-          ...(step.cards ? { cards: step.cards } : {}),
-          ...(step.gaps ? { gaps: step.gaps } : {}),
-        },
-      ]);
-      setDraft((d) => ({ ...d, ...step.draft }));
-      setTurn((t) => t + 1);
-    }, 900);
+
+    // History for the live agent (built from the transcript before this turn).
+    const history = messages
+      .filter((m) => m.text)
+      .map((m) => ({ role: m.role === "user" ? ("user" as const) : ("assistant" as const), content: m.text }));
+
+    void askScout(value, history, conversationId.current)
+      .then((res) => {
+        if (!res.grounded) return false;
+        setThinking(false);
+        setMessages((m) => [
+          ...m,
+          {
+            id: `a-${Date.now()}`,
+            role: "agent",
+            agent: "Digital Scout",
+            text: res.answer,
+            ...(res.citations.length ? { citations: res.citations } : {}),
+          },
+        ]);
+        return true;
+      })
+      .catch(() => false)
+      .then((handled) => {
+        if (handled) return;
+        // Scripted Need Definition Agent fallback (offline / Azure not configured).
+        const step = TURNS[Math.min(turn, TURNS.length - 1)]!;
+        window.setTimeout(() => {
+          setThinking(false);
+          setMessages((m) => [
+            ...m,
+            {
+              id: `a-${Date.now()}`,
+              role: "agent",
+              agent: step.agent,
+              text: step.text,
+              ...(step.cards ? { cards: step.cards } : {}),
+              ...(step.gaps ? { gaps: step.gaps } : {}),
+            },
+          ]);
+          setDraft((d) => ({ ...d, ...step.draft }));
+          setTurn((t) => t + 1);
+        }, 900);
+      });
   }
 
   const complete = turn >= TURNS.length;
@@ -368,6 +397,25 @@ function AskPage() {
                         {m.cards.map((c) => (
                           <InlineCard key={`${c.kind}-${c.id}`} card={c} />
                         ))}
+                      </div>
+                    ) : null}
+
+                    {m.citations?.length ? (
+                      <div className="mt-3">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                          Sources
+                        </p>
+                        <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          {m.citations.map((c) => (
+                            <a
+                              key={c.href + c.label}
+                              href={c.href}
+                              className="rounded-md border border-border bg-surface px-2.5 py-1 text-[12px] text-foreground transition-colors hover:border-ai/40 hover:bg-ai/6"
+                            >
+                              {c.label}
+                            </a>
+                          ))}
+                        </div>
                       </div>
                     ) : null}
                   </div>

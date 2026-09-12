@@ -48,6 +48,10 @@ import type {
   TechnologyNeed,
   TestReport,
 } from "../data/types";
+import { askScout as askScoutServerFn, summarizeSearch } from "../server/agent";
+import type { ChatTurn, GroundingHit } from "../server/agent";
+import { reindex, runSearch } from "../server/search";
+import { fetchNeed, fetchNeeds, findSimilarNeeds, syncNeeds } from "../server/db";
 
 export const API_BASE_URL = (import.meta.env["VITE_DIGITAL_SCOUT_API_URL"] as string) ?? "/api";
 export const USING_MOCK_ADAPTER = !import.meta.env["VITE_DIGITAL_SCOUT_API_URL"];
@@ -77,10 +81,21 @@ export const isStale = (need: TechnologyNeed) =>
   daysSince(need.lastActivityAt) >= STALE_THRESHOLD_DAYS &&
   !["Closed", "Archived"].includes(need.status);
 
+/** Base needs corpus — Postgres when configured, in-memory seed otherwise. */
+async function needsSource(): Promise<TechnologyNeed[]> {
+  try {
+    const r = await fetchNeeds();
+    if (r.configured && r.needs && r.needs.length) return r.needs;
+  } catch {
+    // fall through to seed
+  }
+  return needs;
+}
+
 export async function listNeeds(filters: NeedFilters = {}): Promise<TechnologyNeed[]> {
-  await latency(80);
+  const base = await needsSource();
   const q = filters.q?.toLowerCase().trim();
-  return needs.filter((n) => {
+  return base.filter((n) => {
     if (q) {
       const hay = [n.title, n.ref, n.problemStatement, ...n.keywords, n.category, n.psl]
         .join(" ")
@@ -100,7 +115,12 @@ export async function listNeeds(filters: NeedFilters = {}): Promise<TechnologyNe
 }
 
 export async function getNeed(id: string): Promise<TechnologyNeed | undefined> {
-  await latency(60);
+  try {
+    const r = await fetchNeed({ data: { id } });
+    if (r.configured) return r.need ?? undefined;
+  } catch {
+    // fall through to seed
+  }
   return needs.find((n) => n.id === id);
 }
 
@@ -246,9 +266,8 @@ function score(text: string, tokens: string[]): number {
   return tokens.reduce((acc, t) => (hay.includes(t) ? acc + 1 : acc), 0);
 }
 
-/** Mock of the Azure AI Search semantic + vector query. */
-export async function search(query: string): Promise<SearchResponse> {
-  await latency(260);
+/** Seed-based retrieval used as the fallback when Azure AI Search is off. */
+function seedSearchHits(query: string): SearchHit[] {
   const tokens = tokenise(query);
   const hits: SearchHit[] = [];
 
@@ -342,15 +361,36 @@ export async function search(query: string): Promise<SearchResponse> {
   }
 
   hits.sort((a, b) => b.score - a.score);
-  const top = hits.slice(0, 40);
+  return hits.slice(0, 40);
+}
+
+/** Knowledge search: Azure AI Search when configured, seed retrieval otherwise. */
+export async function search(query: string): Promise<SearchResponse> {
+  let top: SearchHit[];
+  try {
+    const azure = await runSearch({ data: { query } });
+    top = azure.configured && azure.hits ? azure.hits : seedSearchHits(query);
+  } catch {
+    top = seedSearchHits(query);
+  }
 
   const needCount = top.filter((h) => h.type === "need").length;
   const evalCount = top.filter((h) => h.type === "evaluation").length;
   const companyCount = top.filter((h) => h.type === "company").length;
 
-  const summary = top.length
+  const templatedSummary = top.length
     ? `Contoso has prior work related to "${query}". Digital Scout found ${needCount} technology need${needCount === 1 ? "" : "s"}, ${companyCount} compan${companyCount === 1 ? "y" : "ies"} and ${evalCount} evaluation${evalCount === 1 ? "" : "s"} in the internal knowledge index. The strongest match is ${top[0]!.title}. Review the internal evidence below before starting new work.`
     : `No indexed Contoso knowledge matched "${query}". Digital Scout can start an external discovery run through the Company Research Agent.`;
+
+  // Replace the templated briefing with a real Azure OpenAI summary when the
+  // AI Foundry deployment is configured; otherwise keep the templated text.
+  let summary = templatedSummary;
+  try {
+    const ai = await summarizeSearch({ data: { query, hits: toGroundingHits(top) } });
+    if (ai.configured && ai.summary) summary = ai.summary;
+  } catch {
+    // Ignore and use the templated summary.
+  }
 
   return {
     query,
@@ -359,6 +399,87 @@ export async function search(query: string): Promise<SearchResponse> {
     hits: top,
   };
 }
+
+/** Map internal search hits to the compact grounding payload sent to the agent. */
+const toGroundingHits = (hits: SearchHit[]): GroundingHit[] =>
+  hits.slice(0, 8).map((h) => ({
+    title: h.title,
+    type: h.type,
+    snippet: h.snippet,
+    href: h.href,
+  }));
+
+export interface AskScoutResult {
+  answer: string;
+  citations: { label: string; href: string }[];
+  /** True when the answer came from Azure AI Foundry, false for the seed fallback. */
+  grounded: boolean;
+}
+
+/**
+ * Ask Digital Scout a free-form question. Retrieves internal matches via the
+ * knowledge index, then grounds an Azure AI Foundry answer on them. When the
+ * AI deployment is not configured it returns a deterministic summary built from
+ * the same internal matches so the experience still works offline.
+ */
+export async function askScout(
+  query: string,
+  history: ChatTurn[] = [],
+  conversationId?: string,
+): Promise<AskScoutResult> {
+  const results = await search(query);
+  const hits = toGroundingHits(results.hits);
+  try {
+    const ai = await askScoutServerFn({ data: { query, hits, history, conversationId } });
+    if (ai.configured && ai.answer) {
+      return {
+        answer: ai.answer,
+        citations: ai.citations ?? results.citations,
+        grounded: true,
+      };
+    }
+  } catch {
+    // Fall through to the seed-based answer below.
+  }
+  return {
+    answer: results.summary,
+    citations: results.citations,
+    grounded: false,
+  };
+}
+
+/* ------------------------------------------------------- platform ops */
+
+export type ChatMessage = ChatTurn;
+
+/** Similar needs via pgvector semantic search; empty when Postgres/embeddings are off. */
+export async function relatedNeedsSemantic(needId: string): Promise<TechnologyNeed[]> {
+  try {
+    const r = await findSimilarNeeds({ data: { needId } });
+    if (r.configured && r.needs) return r.needs;
+  } catch {
+    // Postgres/pgvector not configured.
+  }
+  return [];
+}
+
+export interface PlatformSyncResult {
+  search: { configured: boolean; indexed?: number; vectors?: boolean; error?: string };
+  postgres: { configured: boolean; rows?: number; vectors?: boolean; error?: string };
+}
+
+/**
+ * Admin action: build the Azure AI Search index and load the needs table.
+ * No-ops (reports `configured: false`) for any plane that isn't provisioned.
+ */
+export async function syncPlatformData(): Promise<PlatformSyncResult> {
+  const [searchResult, postgresResult] = await Promise.all([
+    reindex().catch(() => ({ configured: false as const })),
+    syncNeeds().catch(() => ({ configured: false as const })),
+  ]);
+  return { search: searchResult, postgres: postgresResult };
+}
+
 
 /* ---------------------------------------------- recommendation engine */
 
