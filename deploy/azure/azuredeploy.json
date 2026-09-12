@@ -197,6 +197,7 @@
     "searchServiceName": "[take(format('{0}-search-{1}', parameters('namePrefix'), variables('suffix')), 60)]",
     "cosmosAccountName": "[take(format('{0}-cosmos-{1}', parameters('namePrefix'), variables('suffix')), 44)]",
     "aiFoundryName": "[format('{0}-aifoundry-{1}', parameters('namePrefix'), variables('suffix'))]",
+    "aiFoundryProjectName": "[format('{0}proj', parameters('namePrefix'))]",
     "postgresServerName": "[format('{0}-pg-{1}', parameters('namePrefix'), variables('suffix'))]",
     "cosmosDatabaseName": "digitalscout",
     "cosmosConversationsContainer": "conversations",
@@ -481,7 +482,7 @@
     {
       "condition": "[parameters('deployAiFoundry')]",
       "type": "Microsoft.CognitiveServices/accounts",
-      "apiVersion": "2024-10-01",
+      "apiVersion": "2025-06-01",
       "name": "[variables('aiFoundryName')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -493,6 +494,7 @@
         "type": "SystemAssigned"
       },
       "properties": {
+        "allowProjectManagement": true,
         "customSubDomainName": "[variables('aiFoundryName')]",
         "publicNetworkAccess": "Enabled",
         "disableLocalAuth": true
@@ -539,6 +541,26 @@
       "dependsOn": [
         "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]",
         "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('aiFoundryName'), parameters('chatModelName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deployAiFoundry')]",
+      "type": "Microsoft.CognitiveServices/accounts/projects",
+      "apiVersion": "2025-06-01",
+      "name": "[format('{0}/{1}', variables('aiFoundryName'), variables('aiFoundryProjectName'))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "displayName": "[variables('aiFoundryProjectName')]",
+        "description": "Digital Scout agent project."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]",
+        "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('aiFoundryName'), parameters('chatModelName'))]",
+        "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('aiFoundryName'), parameters('embeddingModelName'))]"
       ]
     },
     {
@@ -816,6 +838,13 @@
         "description": "Deployed embedding model deployment name."
       },
       "value": "[if(parameters('deployAiFoundry'), parameters('embeddingModelName'), 'not-deployed')]"
+    },
+    "FOUNDRY_PROJECT_ENDPOINT": {
+      "type": "string",
+      "metadata": {
+        "description": "Foundry project endpoint for the Agents SDK (https://<account>.services.ai.azure.com/api/projects/<project>)."
+      },
+      "value": "[if(parameters('deployAiFoundry'), format('https://{0}.services.ai.azure.com/api/projects/{1}', variables('aiFoundryName'), variables('aiFoundryProjectName')), 'not-deployed')]"
     }
   }
 }

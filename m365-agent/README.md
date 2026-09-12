@@ -49,9 +49,20 @@ This approach allows you to leverage your existing Foundry agents directly withi
 
 ## How it works end-to-end
 
+### 0. Two separate deployments
+
+The solution deploys in **two independent steps**, because Azure resources and the Microsoft 365 / Teams app live on different control planes:
+
+| Step | What it deploys | How |
+| --- | --- | --- |
+| **A. Azure estate** | Web app + Cosmos DB + PostgreSQL + AI Search + Storage + Key Vault + monitoring + **Foundry account, project, and model deployments** | **Deploy to Azure** button (portal) → `deploy/azure/azuredeploy.json`. Pick the subscription/resource group and provide a PostgreSQL admin password. |
+| **B. M365 / Teams bot** | App Service + user-assigned managed identity + Azure Bot + Teams channel + Teams app | `atk provision` then `atk deploy` from `m365-agent/` (`m365agents.yml`). |
+
+After step A, copy the Foundry values from the deployment outputs (`aiFoundryEndpoint` / `FOUNDRY_PROJECT_ENDPOINT`) into `m365-agent/env/.env.dev` (or set `FOUNDRY_ACCOUNT_NAME` + `FOUNDRY_PROJECT_NAME` and let step B resolve the endpoint dynamically). Set `FOUNDRY_AGENT_NAME` to your Scout agent.
+
 ### 1. Provision / deploy (dynamic config)
 
-When you run Agents Toolkit provision + deploy (`m365agents.yml`):
+When you run Agents Toolkit provision + deploy (`m365agents.yml`) for the bot host:
 
 ```mermaid
 flowchart TD
@@ -63,7 +74,7 @@ flowchart TD
 ```
 
 - **arm/deploy** stands up the App Service + user-assigned managed identity + Bot registration (`infra/azure.bicep`), seeding app settings from the env file.
-- **resolve + wire Foundry endpoint**: if `FOUNDRY_PROJECT_ENDPOINT` is blank, it resolves the endpoint from `FOUNDRY_ACCOUNT_NAME` (+ `FOUNDRY_PROJECT_NAME`) via `az cognitiveservices account show --query properties.endpoint`, persists it (`::set-teamsfx-env`), and merges it onto the App Service. The running app gets the endpoint without a hardcoded URL.
+- **resolve + wire Foundry endpoint**: if `FOUNDRY_PROJECT_ENDPOINT` is blank, it resolves the endpoint from `FOUNDRY_ACCOUNT_NAME` (+ `FOUNDRY_PROJECT_NAME`) via `az cognitiveservices account show`, persists it (`::set-teamsfx-env`), and merges it onto the App Service. The running app gets the endpoint without a hardcoded URL.
 - **grant Foundry access** gives the app's managed identity the `Azure AI User` role on the Foundry project — no keys.
 
 ### 2. Runtime: a user chats with Scout
