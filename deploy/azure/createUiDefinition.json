@@ -191,7 +191,7 @@
             "name": "chatModelName",
             "type": "Microsoft.Common.TextBox",
             "label": "Chat model",
-            "defaultValue": "gpt-4o-mini",
+            "defaultValue": "gpt-4.1-mini",
             "visible": "[steps('aiFoundry').deployAiFoundry]",
             "toolTip": "OpenAI chat/reasoning model to deploy.",
             "constraints": { "required": true }
@@ -200,7 +200,7 @@
             "name": "chatModelVersion",
             "type": "Microsoft.Common.TextBox",
             "label": "Chat model version",
-            "defaultValue": "2024-07-18",
+            "defaultValue": "2025-04-14",
             "visible": "[steps('aiFoundry').deployAiFoundry]",
             "constraints": { "required": true }
           },
